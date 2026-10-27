@@ -1,0 +1,57 @@
+name: Archive final four-solver PSP heldout evidence
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/archive-four-heldout.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download pinned original heldout artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p results/raw /tmp/four-heldout
+          gh run download 40566528527 --repo "$GITHUB_REPOSITORY" -n strict-four-method-heldout -D /tmp/four-heldout
+          cp /tmp/four-heldout/four-method-heldout.json results/raw/2026-10-27-four-method-heldout.json
+      - name: Verify checksum and complete original method-level evidence
+        run: |
+          echo "64aa0565e569dc64abe13cca96282fcf1a481c7909317e913c6f978ef2673f46  results/raw/2026-10-27-four-method-heldout.json" | sha256sum -c -
+          python - <<'PY'
+          import json
+          p="results/raw/2026-10-27-four-method-heldout.json"
+          d=json.load(open(p))
+          assert d['protocol']=='PSP-strict-common-incumbent-v1'
+          assert d['benchmark_commit']=='2257a80fd9ff151e1e4bffbe5fc32d58a29595d1'
+          assert d['source_sha']=='d772b74690075f641be8077e69748ec482e9febf'
+          assert d['split']=='test' and len(d['rows'])==12
+          assert d['refinement_hard_wall_s']==5 and d['source_hard_wall_s']==2
+          assert len(d['methods'])==4 and 'adaptive-ruin-recreate' in d['methods']
+          assert {r['n'] for r in d['rows']}=={80,100,150}
+          assert all(r['source_status']=='FEASIBLE' for r in d['rows'])
+          assert all(v['valid'] and v['upstream_verified'] for r in d['rows'] for v in r['methods'].values())
+          assert sum(r['methods']['warm-cp-sat']['status']=='TIMEOUT' for r in d['rows'])==8
+          assert sum(r['methods']['fix-optimize-cp-sat']['status']=='FEASIBLE' for r in d['rows'])==12
+          assert all(r['methods']['fix-optimize-cp-sat']['objective'] <=
+                     min(v['objective'] for v in r['methods'].values())+1e-6
+                     for r in d['rows'])
+          print('VERIFIED: 12 previously unseen, doubly checked paired 4-method trials')
+          PY
+      - name: Generate independently derived scorecard and preserve raw
+        run: |
+          python -m pip install -e .
+          python scripts/render_solver_matrix.py results/raw/2026-10-27-four-method-heldout.json --output results/2026-10-27-four-method-heldout.md
+      - name: Commit archival evidence to public repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/raw results/*.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive strictly bounded four-solver heldout benchmark results"
+            git push origin HEAD:main
+          fi

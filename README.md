@@ -35,6 +35,18 @@ implementations are pinned; constraints are never silently dropped.
 
 ### Verified solver comparison results
 
+* [Four independent strategies, untouched 80–150-vessel tests](results/2026-10-27-four-method-heldout.md):
+  shared valid baseline and strict five-second refinement deadlines.
+  Mean objective reductions vs baseline: **8.65%** for CP-SAT LNS,
+  **0.70%** HiGHS restricted MILP, **0.53%** ALNS-style ruin/recreate,
+  **0.00%** global warm CP-SAT. LNS best in **12/12 paired trials**;
+  8/12 global full-model calls exceeded their hard deadline.
+* [Four-method training comparison](results/2026-10-27-four-strategies-train.md):
+  exposes negative and positive performance at short three-second budgets,
+  with all original per-method outputs archived.
+
+### Earlier three-solver comparison
+
 * [Three independent algorithm families — original held-out PSP](results/2026-10-27-solver-matrix-heldout.md):
   full CP-SAT, exact-neighborhood CP-SAT, and restricted-master HiGHS MILP,
   12 paired runs; **7.31%, 0.68%, 0%** mean reductions respectively, under
