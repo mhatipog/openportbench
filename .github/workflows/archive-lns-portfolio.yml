@@ -1,0 +1,47 @@
+name: Archive final strict-portfolio comparator evidence
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/archive-lns-portfolio.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Retrieve original pinned successful benchmark artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p results/raw /tmp/portfolio-lns
+          gh run download 40559857046 --repo "$GITHUB_REPOSITORY" -n lns-vs-strict-lace-portfolio -D /tmp/portfolio-lns
+          cp /tmp/portfolio-lns/lns-vs-lace-portfolio.json results/raw/2026-10-27-lns-vs-strict-lace.json
+      - name: Verify exact checksum and independently checked observations
+        run: |
+          echo "55c66737014022846b4c17a146c51381e94b9c132960bfd5cad05ce37b7510df  results/raw/2026-10-27-lns-vs-strict-lace.json" | sha256sum -c -
+          python - <<'PY'
+          import json
+          p="results/raw/2026-10-27-lns-vs-strict-lace.json"
+          doc=json.load(open(p))
+          assert doc["benchmark_commit"]=="a1fb1f374cc2882f563879b9d298538544e4dfaa"
+          assert doc["upstream_lace_sha"]=="d772b74690075f641be8077e69748ec482e9febf"
+          assert len(doc["rows"])==12
+          assert all(len(r["portfolio"])==10 and r["split"]=="test" for r in doc["rows"])
+          assert all(r["hybrid"].get("independently_verified") and
+                     r["hybrid"]["final_objective"] is not None for r in doc["rows"])
+          assert all(r["portfolio_vs_hybrid_gain_pct"]>0 for r in doc["rows"])
+          assert sum(r["portfolio_timeout_count"] for r in doc["rows"])==34
+          print("VERIFIED: 12 portfolio comparisons, 120 heuristic runs, 34 real timeouts")
+          PY
+      - name: Commit exact primary-source JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/raw
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive checksum-verified strict LACE portfolio comparison"
+            git push origin HEAD:main
+          fi

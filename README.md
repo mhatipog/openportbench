@@ -25,6 +25,13 @@ Methods report their actual elapsed times, feasibility-certified objectives
 and, for CP-SAT, a valid solver best bound where available. No seed or
 runtime extrapolation is considered evidence of a speedup.
 
+## Measured optimization results (research instances)
+
+* [Frozen LNS versus all ten LACE heuristics, strict 7-second budget](results/2026-10-27-lns-portfolio.md): 12/12 paired reductions across six held-out PSP cases; 6.33% mean lower objective. **Not a broad state-of-the-art claim**.
+* [Frozen LNS versus warm full CP-SAT](results/2026-10-27-lns-heldout.md): 12/12 paired reductions across separate held-out PSP instances.
+* [LNS training configuration and negative results](results/2026-10-27-lns-training.md): transparent selection and independent validation.
+* Original inputs, SHA256 checksums and complete method-level JSON records are in [results/raw/](results/raw/).
+
 ## Research tracks
 
 | Problem (LACE slug) | Data | Upstream 10-heuristic reproduction | Independent exact formulation |
