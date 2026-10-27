@@ -66,7 +66,7 @@ def greedy(instance: dict, order: str = "fcfs") -> dict:
     return solution
 
 
-def cp_sat(instance: dict, seconds: float = 5.0, seed: int = 1) -> dict:
+def cp_sat(instance: dict, seconds: float = 5.0, seed: int = 1, hint_solution: dict | None = None) -> dict:
     """Full PSP CP-SAT model, no scenario/choice pruning.
 
     Integer time exactly matches LACE's discrete-time contract. Decimal
@@ -157,6 +157,26 @@ def cp_sat(instance: dict, seconds: float = 5.0, seed: int = 1) -> dict:
         ])
     for intervals in berth_intervals + tug_intervals:
         model.add_no_overlap(intervals)
+    # Safe incumbent injection: a complete, independently verified PSP
+    # schedule. CP-SAT hints are guidance only, never hard fixing.
+    if hint_solution is not None:
+        evaluate(instance, hint_solution)
+        for i in range(n):
+            place = hint_solution["vessel_assignments"][i]
+            active = int(place is not None)
+            model.add_hint(served[i], active)
+            model.add_hint(ti[i], hint_solution["inbound_tugboats"][i][0][1] if active else 0)
+            model.add_hint(tb[i], place[1] if active else 0)
+            model.add_hint(to[i], hint_solution["outbound_tugboats"][i][0][1] if active else 0)
+            model.add_hint(dev[i], abs(hint_solution["inbound_tugboats"][i][0][1] - instance["vessel_etas"][i]) if active else 0)
+            for berth, lit in berth_assign[i]:
+                model.add_hint(lit, int(active and berth == place[0]))
+            in_team = {pair[0] for pair in hint_solution["inbound_tugboats"][i]}
+            out_team = {pair[0] for pair in hint_solution["outbound_tugboats"][i]}
+            for k in range(kcount):
+                model.add_hint(xin[i][k], int(k in in_team))
+                model.add_hint(xout[i][k], int(k in out_team))
+
     model.minimize(sum(expr * coeff for expr, coeff in cost_terms))
 
     solver = cp_model.CpSolver()

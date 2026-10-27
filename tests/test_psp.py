@@ -142,3 +142,26 @@ def test_two_vessel_cp_sat_against_exhaustive_search(prep):
     assert exact["status"] == "OPTIMAL"
     assert exact["objective"] == pytest.approx(best)
     assert exact["best_bound"] == pytest.approx(best)
+
+
+def test_cp_sat_valid_hint_preserves_optimum():
+    pytest.importorskip("ortools")
+    from openportbench.solvers import cp_sat
+    a = case()
+    hint = greedy(a, order="priority")
+    assert evaluate(a, hint) < evaluate(a, empty_solution(a))
+    cold = cp_sat(a, seconds=5, seed=1)
+    warm = cp_sat(a, seconds=5, seed=1, hint_solution=hint)
+    assert cold["status"] == warm["status"] == "OPTIMAL"
+    assert cold["objective"] == pytest.approx(warm["objective"])
+    assert warm["best_bound"] == pytest.approx(warm["objective"])
+
+
+def test_cp_sat_rejects_invalid_hint():
+    pytest.importorskip("ortools")
+    from openportbench.solvers import cp_sat
+    a = case()
+    invalid = empty_solution(a)
+    invalid["vessel_assignments"][0] = [0, 0]
+    with pytest.raises(ValueError):
+        cp_sat(a, seconds=1, hint_solution=invalid)
