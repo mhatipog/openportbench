@@ -1,0 +1,50 @@
+name: Archive verified 2026-10-27 research records
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/archive-results.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download exact successful run artifacts, without executing them
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p results/raw /tmp/psp /tmp/mobile /tmp/warm
+          gh run download 40550247223 --repo "$GITHUB_REPOSITORY" -n psp-heldout-raw -D /tmp/psp
+          gh run download 40550573039 --repo "$GITHUB_REPOSITORY" -n synthetic-metric-experiment -D /tmp/mobile
+          gh run download 40551425051 --repo "$GITHUB_REPOSITORY" -n warm-train-records -D /tmp/warm
+          cp /tmp/psp/heldout-psp.jsonl results/raw/2026-10-27-psp-heldout.jsonl
+          cp /tmp/mobile/metric-mobility.json results/raw/2026-10-27-metric-mobility.json
+          cp /tmp/warm/psp-warm-hint-train.json results/raw/2026-10-27-psp-warm-train.json
+      - name: Verify content checksums, provenance, and count
+        run: |
+          echo "a0ce2333e2da638b15cc75749a31a80eedc3a2406aae82ac80298b236e218382  results/raw/2026-10-27-psp-heldout.jsonl" | sha256sum -c -
+          echo "6473927cad6e416ed2e87b6c51593577e33827d0866f952194e1ae712ff6692b  results/raw/2026-10-27-metric-mobility.json" | sha256sum -c -
+          echo "81d01fa4eeae31ad2e2ee5158f9f2b5345e91d0bd52d84248471bd02e089e518  results/raw/2026-10-27-psp-warm-train.json" | sha256sum -c -
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path("results/raw")
+          a=[json.loads(line) for line in (p/"2026-10-27-psp-heldout.jsonl").read_text().splitlines()]
+          b=json.loads((p/"2026-10-27-metric-mobility.json").read_text())
+          c=json.loads((p/"2026-10-27-psp-warm-train.json").read_text())
+          assert len(a)==6 and all(r["lace_sha"]=="d772b74690075f641be8077e69748ec482e9febf" for r in a)
+          assert len(b["rows"])==24 and b["source_commit"]=="72661d9b7bc49ebed378e63d37e12c95d10220e9"
+          assert len(c["rows"])==9 and c["benchmark_sha"]=="0c18b653072ea9e4c64b306521106d7596a62141"
+          print("VERIFIED 6 PSP size tiers, 24 metric rows, 9 training comparisons")
+          PY
+      - name: Commit content-addressed research data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/raw
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive checksummed experimental records from verified Actions runs"
+            git push origin HEAD:main
+          fi
