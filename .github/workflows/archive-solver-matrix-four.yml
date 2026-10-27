@@ -1,0 +1,52 @@
+name: Archive verified four-method PSP training comparison
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/archive-solver-matrix-four.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Retrieve exact previous source run artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p results/raw /tmp/four
+          gh run download 40566037016 --repo "$GITHUB_REPOSITORY" -n strict-four-strategies-train -D /tmp/four
+          cp /tmp/four/four-strategies-train.json results/raw/2026-10-27-four-strategies-train.json
+      - name: Assert raw SHA256, provenance and measured methods
+        run: |
+          echo "5f0b0e6a79df90541f19bf311cae9adec502a9e07c6d13c701a43bf7ec17b124  results/raw/2026-10-27-four-strategies-train.json" | sha256sum -c -
+          python - <<'PY'
+          import json
+          p="results/raw/2026-10-27-four-strategies-train.json"
+          r=json.load(open(p))
+          assert r["protocol"]=="PSP-strict-common-incumbent-v1"
+          assert r["benchmark_commit"]=="082f4504eca1d49ef6a9ca2203234e67253b59cd"
+          assert r["source_sha"]=="d772b74690075f641be8077e69748ec482e9febf"
+          assert r["split"]=="train" and len(r["rows"])==12
+          assert "adaptive-ruin-recreate" in r["methods"] and len(r["methods"])==4
+          assert {x["n"] for x in r["rows"]}=={20,40,60}
+          assert all(len(x["methods"])==4 and x["source_status"]=="FEASIBLE" for x in r["rows"])
+          assert all(y["upstream_verified"] and y["valid"] for x in r["rows"] for y in x["methods"].values())
+          assert sum(x["methods"]["warm-cp-sat"]["status"]=="TIMEOUT" for x in r["rows"])==10
+          print("VERIFIED: 12 four-method research measurements, including negative results")
+          PY
+      - name: Recreate scientific scorecard from primary JSON
+        run: |
+          python -m pip install -e .
+          python scripts/render_solver_matrix.py results/raw/2026-10-27-four-strategies-train.json --output results/2026-10-27-four-strategies-train.md
+      - name: Commit primary evidence and scorecard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/raw results/*.md
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive strict-wall four-strategy research evidence"
+            git push origin HEAD:main
+          fi
