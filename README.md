@@ -3,6 +3,7 @@
 **An open, reproducible benchmark for maritime scheduling algorithms.**
 
 [Verified benchmarks](results/2026-10-27-budget-sweep.md) ·
+[Handoff / status](docs/STATUS.md) ·
 [Reproduce results](docs/reproduction.md) ·
 [Benchmark rules](docs/benchmarking.md) ·
 [Contribute a method](CONTRIBUTING.md) ·
