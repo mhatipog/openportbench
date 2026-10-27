@@ -198,10 +198,25 @@ def cp_sat(instance: dict, seconds: float = 5.0, seed: int = 1, hint_solution: d
         check = evaluate(instance, result)
         if abs(check - solver.objective_value / scale) > 1e-6:
             raise AssertionError(f"CP-SAT objective disagreement: checker={check} model={solver.objective_value / scale}")
+    solver_feasible = status in (cp_model.OPTIMAL, cp_model.FEASIBLE)
+    solver_objective = evaluate(instance, result) if solver_feasible else None
+    selected_solution = result if solver_feasible else None
+    source = "cp-sat" if solver_feasible else None
+    # A hint is an independently feasible incumbent, whether or not the
+    # solver explores the hinted assignment before the deadline. Preserve it.
+    if hint_solution is not None:
+        incumbent_obj = evaluate(instance, hint_solution)
+        if (not solver_feasible or incumbent_obj < solver_objective - 1e-6):
+            if status == cp_model.OPTIMAL:
+                raise AssertionError("Verified incumbent undercuts a claimed optimum")
+            selected_solution = hint_solution
+            source = "verified_hint"
     return {
-        "status": solver.status_name(status),
-        "solution": result if status in (cp_model.OPTIMAL, cp_model.FEASIBLE) else None,
-        "objective": evaluate(instance, result) if status in (cp_model.OPTIMAL, cp_model.FEASIBLE) else None,
+        "status": solver.status_name(status),  # raw CP-SAT proof/search status
+        "solution": selected_solution,
+        "objective": evaluate(instance, selected_solution) if selected_solution is not None else None,
+        "solver_objective": solver_objective,  # may be None even with a hint
+        "incumbent_source": source,
         "best_bound": solver.best_objective_bound / scale if status in (cp_model.OPTIMAL, cp_model.FEASIBLE, cp_model.UNKNOWN) else None,
         "runtime_s": elapsed,
         "seed": seed,

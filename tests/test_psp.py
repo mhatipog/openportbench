@@ -165,3 +165,16 @@ def test_cp_sat_rejects_invalid_hint():
     invalid["vessel_assignments"][0] = [0, 0]
     with pytest.raises(ValueError):
         cp_sat(a, seconds=1, hint_solution=invalid)
+
+
+def test_cp_sat_fallback_incumbent_is_always_feasible():
+    pytest.importorskip("ortools")
+    from openportbench.solvers import cp_sat
+    a = case()
+    fallback = greedy(a, "priority")
+    r = cp_sat(a, seconds=0.001, seed=2, hint_solution=fallback)
+    assert r["solution"] is not None
+    assert r["objective"] <= evaluate(a, fallback) + 1e-6
+    assert r["incumbent_source"] in ("verified_hint", "cp-sat")
+    if r["incumbent_source"] == "verified_hint":
+        assert r["status"] != "OPTIMAL"
