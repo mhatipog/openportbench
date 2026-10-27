@@ -1,193 +1,141 @@
 # OpenPortBench
 
-**Benchmark optimization algorithms, don't just showcase one.**
+**An open, reproducible benchmark for maritime scheduling algorithms.**
 
-OpenPortBench is an open, independently reproducible maritime optimization
-**comparison platform**. It runs competing algorithm families on identical
-problem formulations, checks every returned schedule, enforces measurable
-time budgets and publishes raw negative as well as positive results.
+[Verified benchmarks](results/2026-10-27-budget-sweep.md) ·
+[Reproduce results](docs/reproduction.md) ·
+[Benchmark rules](docs/benchmarking.md) ·
+[Contribute a method](CONTRIBUTING.md) ·
+[CI](https://github.com/mhatipog/openportbench/actions/workflows/ci.yml)
 
-**Independent, reproducible maritime planning optimization benchmarks.**
-The first supported exact formulation is LACE's *Port Scheduling Problem* (PSP),
-not a simplified berth-only proxy. The benchmark accepts LACE's unmodified
-instances and scores all methods with an independent feasibility checker.
+OpenPortBench compares optimization approaches on the **same mathematical
+problem, original instances, starting schedules, scoring rules, and enforced
+time limits**. The first supported model is the integrated discrete
+**Port Scheduling Problem (PSP)** from [PJ-NTU/LACE](https://github.com/PJ-NTU/LACE).
+All feasible schedules are checked using an independently written PSP validator,
+and published LACE experiments also cross-check the upstream evaluator.
 
-**Status: research prototype.** [Research comparison matrix](docs/research-matrix.md) and [metric subproblem experiments](scripts/metric_experiments.py). [First measured, reproducible smoke results](results/2026-10-27-train-smoke.md). This repository does not claim deployment at
-the Port of Antwerp-Bruges or validation on operational traffic. LACE's four
-port problems use generated academic test instances. See
-[methodology](docs/methodology.md) and [reproduction](docs/reproduction.md).
+**Status: reproducible research benchmark (v0.1), not an operational
+port-dispatch system or a commercial-solver comparison.** The datasets in
+the recorded results are generated academic instances, not real port traffic.
 
-## Benchmark-first architecture
+## Latest verified comparison
 
-| Benchmark family | Implementation | What it actually proves |
+The [frozen scaling experiment of 27 October 2026](results/2026-10-27-budget-sweep.md)
+tested four methods on **six original LACE test instances (80, 100, 150, 250,
+300 and 500 vessels), two seeds each**. Each method received the *same
+independently verified starting schedule* and identical externally enforced
+refinement deadlines. The common starting schedule took a separate hard
+2-second construction allowance.
+
+| Method | Objective reduction, 3 s | Objective reduction, 10 s | Hard timeouts at 10 s |
+| --- | ---: | ---: | ---: |
+| CP-SAT fix-and-optimize (LNS) | **5.35%** | **9.02%** | 0/12 |
+| Restricted-master HiGHS MILP | 0.26% | 0.26% | 4/12 |
+| Adaptive ruin-and-recreate | 0.21% | 0.21% | 4/12 |
+| Full warm-start CP-SAT | 0.00% | 0.00% | 10/12 |
+
+Percentages are *per-instance normalized reductions of the same four-term PSP
+objective relative to the common initial schedule*, averaged over distinct
+instances. LNS had the lowest final objective in **12/12 paired trials at
+both limits**. For 500 vessels, it improved the original objective by 1.61%
+at 3 seconds and 2.37% at 10 seconds.
+
+**Interpretation:** A timeout retains the valid starting schedule but is
+reported as a solver timeout, *not* a successful solver result. HiGHS
+`MASTER_OPTIMAL` certifies only the restricted candidate master, not a global
+PSP optimum. These small synthetic experiments do **not** establish general
+academic state of the art or commercial competitiveness.
+
+[Detailed results, per-instance outcomes and bootstrap intervals](results/2026-10-27-budget-sweep.md) ·
+[Primary raw JSON and SHA256](results/raw/2026-10-27-budget-sweep.json) ·
+[Original CI experiment](https://github.com/mhatipog/openportbench/actions/runs/40576919339)
+
+Earlier experiments remain available, but **must not be pooled** with the
+latest protocol:
+[four-method held-out, 5 s](results/2026-10-27-four-method-heldout.md) ·
+[training, 3 s](results/2026-10-27-four-strategies-train.md) ·
+[original LACE ten-heuristic portfolio comparison](results/2026-10-27-lns-portfolio.md).
+The portfolio experiment used a different *allocated-budget* convention
+and is not a directly equivalent strict end-to-end tournament.
+
+## Methods and their limits
+
+| Method | What is implemented | Interpretation |
 | --- | --- | --- |
-| LACE 10-heuristic portfolio | Original MIT-licensed upstream at a pinned commit | Full published baseline; strict wall deadline on each heuristic |
-| Greedy FCFS and priority | Independent PSP constructors | Cheap, transparent controls |
-| Full CP-SAT | OR-Tools complete model | A *global* proof only if the solver returns `OPTIMAL` |
-| CP-SAT fix-and-optimize (LNS) | Exact restricted neighborhoods | Valid heuristic incumbents; **no global optimality proof** |
-| Time-indexed pattern MILP | SciPy / open-source HiGHS | Independent solver family; optimal only among explicitly enumerated vessel patterns |
-| ALNS-style adaptive ruin/recreate | Independent Python metaheuristic | Destroy/repair, regret selection and simulated annealing; valid incumbent only, **not** a reproduction of a specific published ALNS |
-| Online k-server and static k-median | Separate synthetic subproblem track | **Not** solutions to complete integrated PSP |
+| Full OR-Tools CP-SAT | Complete integrated PSP; optional incumbent hint | A global optimum only when the full model returns `OPTIMAL` |
+| CP-SAT LNS | Restricted exact neighborhood repairs with fixed outside vessels | A valid improvement heuristic; no global proof |
+| HiGHS MILP | Sparse time-indexed set-partitioning over generated complete-vessel patterns | Restricted-master optimum only |
+| Adaptive ruin-and-recreate | Randomized destroy/repair, regret insertion, simulated-annealing acceptance | Independent classical baseline, **not** a faithful reproduction of a named published ALNS |
+| LACE portfolio | Ten original shipped heuristics at a pinned source revision | Historical external baseline; separately timed |
+| FCFS / priority | Simple greedy constructions | Transparent construction controls |
 
-[Benchmark protocol, scoring and how to add an algorithm](docs/benchmarking.md)
-explains what can be compared and exactly how. Source datasets and algorithm
-implementations are pinned; constraints are never silently dropped.
+The included [metric k-server and k-median experiments](docs/research-matrix.md)
+are **separate mathematical subproblems**. They are not solvers for complete
+PSP, nor implementations of OpenAI's newer theorem algorithms.
 
-### Verified solver comparison results
+## Get started
 
-### Latest verified evidence: runtime/scale trade-offs
+Requires **Python 3.12+**. The strict comparison worker currently requires
+**Linux or another Unix environment supporting `fork`**.
 
-**[Strict 3-second vs 10-second scaling benchmark (80–500 vessels)](results/2026-10-27-budget-sweep.md)** —
-four search strategies, 6 original LACE *test* inputs, 2 seeds each,
-same verified initial schedule across both deadline choices and
-externally enforced hard deadlines. LNS improved objective by
-**5.35% at 3 s and 9.02% at 10 s**, best in 12/12 paired runs
-at each deadline. Full warm CP-SAT timed out in 10/12 trials;
-restricted-master MILP and adaptive ruin/recreate each timed out in
-4/12. On the 500-vessel case LNS improved **1.61% / 2.37%** respectively.
-These are synthetic samples, **not** proof of general SOTA.
-[Original experiment log](https://github.com/mhatipog/openportbench/actions/runs/40576919339)
-and [complete checksum-verified raw JSON](results/raw/2026-10-27-budget-sweep.json).
-
-* [Four independent strategies, untouched 80–150-vessel tests](results/2026-10-27-four-method-heldout.md):
-  shared valid baseline and strict five-second refinement deadlines.
-  Mean objective reductions vs baseline: **8.65%** for CP-SAT LNS,
-  **0.70%** HiGHS restricted MILP, **0.53%** ALNS-style ruin/recreate,
-  **0.00%** global warm CP-SAT. LNS best in **12/12 paired trials**;
-  8/12 global full-model calls exceeded their hard deadline.
-* [Four-method training comparison](results/2026-10-27-four-strategies-train.md):
-  exposes negative and positive performance at short three-second budgets,
-  with all original per-method outputs archived.
-
-### Earlier three-solver comparison
-
-* [Three independent algorithm families — original held-out PSP](results/2026-10-27-solver-matrix-heldout.md):
-  full CP-SAT, exact-neighborhood CP-SAT, and restricted-master HiGHS MILP,
-  12 paired runs; **7.31%, 0.68%, 0%** mean reductions respectively, under
-  equal five-second strict refinement deadlines. HiGHS is faster but its
-  limited patterns restrict improvements at larger scale.
-* [Same three algorithms — training PSP](results/2026-10-27-solver-matrix-train-scorecard.md):
-  6.47%, 5.30%, 1.30% mean reductions under three-second strict deadlines.
-* A fourth independent **ALNS-style** adaptive destroy/repair competitor
-  has been added. Its executable benchmarking track is
-  [four-strategy comparison workflow](.github/workflows/solver-matrix-four.yml).
-  It is an original baseline, **not** a faithful implementation of a
-  named published maritime paper.
-
-### Common-incumbent tournament
-
-Use the original LACE instance checkout (see [reproduction](docs/reproduction.md)).
-The script obtains a verified source incumbent, then runs *each* refiner behind
-its own strict external deadline. Every candidate gets checked twice: once
-inside the worker, again in the parent, and finally against upstream LACE
-on complete recorded experiments.
-
-```sh
-pip install -e '.[dev]'
-pip install mip networkx
-LACE_ROOT="$PWD/lace_source" python scripts/solver_matrix.py \
-  --split train --sizes 20,40,60 --indices 004,005 \
-  --seeds 1,2 --source-seconds 0.8 --refine-seconds 3 \
-  --output results/tmp/solver-matrix.json
-```
-
-A single comparison budget cannot substitute for [multi-budget performance
-profiles](docs/benchmarking.md). Only methods using the **same** original PSP
-objective and constraints belong on the same ranking. Costs from different
-families or instances must never be compared directly.
-
-## Quick start (Python 3.12+)
-
-```sh
+```bash
 python -m pip install -e '.[dev]'
 pytest -q
-# Obtain a LACE PSP .txt instance (see the reproduction guide)
-openportbench path/to/20_2_3_T12_001.txt --method fcfs
-openportbench path/to/20_2_3_T12_001.txt --method priority
+
+# Run one solver on a LACE PSP instance file
 openportbench path/to/20_2_3_T12_001.txt --method cp-sat --seconds 5 --seed 1
+
+# Run the four registered refinement approaches with a strict 3-second limit
+openportbench compare path/to/20_2_3_T12_001.txt \
+  --baseline empty --seconds 3 --seed 1 --output comparison.json
 ```
 
-Methods report their actual elapsed times, feasibility-certified objectives
-and, for CP-SAT, a valid solver best bound where available. No seed or
-runtime extrapolation is considered evidence of a speedup.
+The standalone `compare` command validates with OpenPortBench's own scorer.
+Its default `empty` baseline is **all vessels unserved**—feasible but
+intentionally weak. For a more meaningful experiment, use
+`--baseline fcfs`, `--baseline priority`, or a complete validated
+`--initial-json path/to/schedule.json` schedule. Baseline construction time
+is measured separately. Add `--include-solutions` to retain full schedules.
 
-## Try comparing solvers on your own PSP instance
+For paper-style, *dual-validator* comparisons on upstream datasets, use
+the pinned [LACE reproduction instructions](docs/reproduction.md). No
+paid optimization license or OpenAI API key is needed to run the benchmark.
 
-Without the upstream LACE checkout, you can run the same registered method
-families on any original-format PSP file. All outcomes are checked by
-OpenPortBench's independent PSP validator, and each method receives a
-strict complete-process wall budget:
+## Reproducibility and scope
 
-```sh
-python -m pip install -e '.[dev]'
-openportbench compare path/to/20_2_3_T12_001.txt --seconds 3 --seed 1 --baseline empty --output my-comparison.json
-```
+- **Identical PSP contract:** arrival windows, compatible berths, both tug
+  services and horsepower teams, tug preparation time, resource non-overlap,
+  stage transitions and LACE's original weighted objective.
+- **Strict budgets:** full subprocess launch, model construction, solving
+  and return-message time, rather than relying on advisory solver timers.
+- **Auditable evidence:** per-run objective, input SHA256, source revision,
+  status, runtime, parameters, solver versions, original JSON and
+  transparent failed runs. Resample **instances**, not just seeds, for
+  exploratory uncertainty intervals.
+- **No mismatched leaderboards:** LACE's other three tug-routing formulations,
+  tidal berth allocation, quay-crane planning and metric-placement experiments
+  are different problems. Their published scores do not belong in the PSP table.
 
-The `empty` baseline means **all vessels unserved**; it is a universal valid
-starting schedule but not a strong practical heuristic. For a stronger
-comparison use `--baseline priority`, `--baseline fcfs`, or supply a
-previously validated full schedule using `--initial-json schedule.json`.
-Baseline construction is timed **separately**. Use `--include-solutions`
-if you need complete optimized berth/tug assignments.
+For the formal scientific assumptions and comparisons see
+[benchmarking](docs/benchmarking.md) and [methodology](docs/methodology.md).
+For literature and OpenAI applicability boundaries see the
+[research matrix](docs/research-matrix.md).
 
-This CLI is an exploratory convenience, not the paper-quality original LACE
-comparison: only the pinned
-[`scripts/solver_matrix.py`](scripts/solver_matrix.py) also cross-validates
-with LACE's own evaluator and records the full benchmark cohort and source.
+## Handoff / further research
 
-## Measured optimization results (research instances)
+**The current benchmark is usable and self-contained for reproducible
+algorithm comparisons.** Future extensions are optional, not prerequisites
+for understanding or reproducing the recorded studies.
 
-* [Frozen LNS versus all ten LACE heuristics, strict 7-second budget](results/2026-10-27-lns-portfolio.md): 12/12 paired reductions across six held-out PSP cases; 6.33% mean lower objective. **Not a broad state-of-the-art claim**.
-* [Frozen LNS versus warm full CP-SAT](results/2026-10-27-lns-heldout.md): 12/12 paired reductions across separate held-out PSP instances.
-* [LNS training configuration and negative results](results/2026-10-27-lns-training.md): transparent selection and independent validation.
-* Original inputs, SHA256 checksums and complete method-level JSON records are in [results/raw/](results/raw/).
+High-value future work: faithful reproduction of a published maritime ALNS
+or decomposition method on an equivalent model; broader pre-registered
+datasets and runtime budgets; and separate operational rescheduling tracks
+for arrival delays, berth outages and tug availability. Do not relabel the
+existing original ALNS-style baseline as a published-paper reproduction.
 
-## Research tracks
+See [contribution guidelines](CONTRIBUTING.md) for evidence requirements.
 
-| Problem (LACE slug) | Data | Upstream 10-heuristic reproduction | Independent exact formulation |
-| --- | --- | --- | --- |
-| `port_scheduling_problem` | generated research PSP | automated smoke reproduction | implemented with CP-SAT and independent feasibility evaluator |
-| `multi_tugboat_routing_and_scheduling_problem` | generated research tug routes | automated upstream reproduction | not implemented |
-| `multi_base_tugboat_routing_and_scheduling_problem` | generated research multi-base tug routes | automated upstream reproduction | not implemented |
-| `multi_tugboat_routing_problem_with_variable_speed` | generated research variable-speed tug routes | automated upstream reproduction | not implemented |
-
-The automated reproduction runs **existing** shipped LACE heuristics; it does
-not run the LLM evolution stage, use an API key, or establish the correctness
-of the published paper's aggregate scores. Its deterministic smoke set is not
-a replacement for an unseen test-set evaluation.
-
-## Why this is different
-
-* **Verification first.** The scorer is independent of LACE's Python evaluator,
-  with cross-comparison against the upstream evaluator in the research workflow.
-* **Like-for-like mathematical formulation.** The CP-SAT model includes both
-  inbound and outbound tug service, preparation occupancy, team horsepower,
-  berth fit, time-window and sequence-slack requirements, and LACE's weighted
-  objective with rational coefficient scaling.
-* **Accounting for compute.** LACE's *portfolio best* gets ten heuristic runs;
-  a single CP-SAT run gets the same **allocated aggregate** wall-clock budget.
-  Actual elapsed wall time is recorded, not assumed equal. Hardware,
-  package versions, and source revisions accompany each JSON result.
-* **Honest limitations.** Non-optimal solutions never receive an "optimal"
-  label. Missing baselines and limited samples are marked as such.
-
-## Directions
-
-A full blinded test sweep, stronger neighborhood search, fair budget-matched
-hybrids, scenario uncertainty, MILP alternatives and a distinct tidal-restricted
-berth-allocation track are in the [research backlog](docs/methodology.md).
-
-## References and attribution
-
-* [PJ-NTU/LACE](https://github.com/PJ-NTU/LACE), MIT; the upstream
-  implementation, generated maritime instances, and evolved portfolio.
-* [TUDelft-CITG/OpenTNSim](https://github.com/TUDelft-CITG/OpenTNSim), MIT;
-  maritime traffic *simulation*, not an equivalent PSP optimization model.
-* [MATHPROG ORlib BAP data](https://github.com/andreas-ernst/Mathprog-ORlib);
-  tidal-constraint berth-allocation research data, a **different** model.
-* [OpenAI mathematics / randomized online k-server](https://github.com/openai/math);
-  interesting for future sequential tug-positioning research, but its
-  theoretical guarantee does **not** apply to this offline PSP model.
-
-OpenPortBench source is MIT-licensed. Third-party code and datasets remain in
-their original repositories with their own attribution/license terms.
+OpenPortBench code is MIT licensed. Upstream algorithms and datasets retain
+their own licenses and provenance; original LACE sources are fetched at the
+pinned revision rather than bundled here.
