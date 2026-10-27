@@ -1,5 +1,12 @@
 # OpenPortBench
 
+**Benchmark optimization algorithms, don't just showcase one.**
+
+OpenPortBench is an open, independently reproducible maritime optimization
+**comparison platform**. It runs competing algorithm families on identical
+problem formulations, checks every returned schedule, enforces measurable
+time budgets and publishes raw negative as well as positive results.
+
 **Independent, reproducible maritime planning optimization benchmarks.**
 The first supported exact formulation is LACE's *Port Scheduling Problem* (PSP),
 not a simplified berth-only proxy. The benchmark accepts LACE's unmodified
@@ -9,6 +16,43 @@ instances and scores all methods with an independent feasibility checker.
 the Port of Antwerp-Bruges or validation on operational traffic. LACE's four
 port problems use generated academic test instances. See
 [methodology](docs/methodology.md) and [reproduction](docs/reproduction.md).
+
+## Benchmark-first architecture
+
+| Benchmark family | Implementation | What it actually proves |
+| --- | --- | --- |
+| LACE 10-heuristic portfolio | Original MIT-licensed upstream at a pinned commit | Full published baseline; strict wall deadline on each heuristic |
+| Greedy FCFS and priority | Independent PSP constructors | Cheap, transparent controls |
+| Full CP-SAT | OR-Tools complete model | A *global* proof only if the solver returns `OPTIMAL` |
+| CP-SAT fix-and-optimize (LNS) | Exact restricted neighborhoods | Valid heuristic incumbents; **no global optimality proof** |
+| Time-indexed pattern MILP | SciPy / open-source HiGHS | Independent solver family; optimal only among explicitly enumerated vessel patterns |
+| Online k-server and static k-median | Separate synthetic subproblem track | **Not** solutions to complete integrated PSP |
+
+[Benchmark protocol, scoring and how to add an algorithm](docs/benchmarking.md)
+explains what can be compared and exactly how. Source datasets and algorithm
+implementations are pinned; constraints are never silently dropped.
+
+### Common-incumbent tournament
+
+Use the original LACE instance checkout (see [reproduction](docs/reproduction.md)).
+The script obtains a verified source incumbent, then runs *each* refiner behind
+its own strict external deadline. Every candidate gets checked twice: once
+inside the worker, again in the parent, and finally against upstream LACE
+on complete recorded experiments.
+
+```sh
+pip install -e '.[dev]'
+pip install mip networkx
+LACE_ROOT="$PWD/lace_source" python scripts/solver_matrix.py \
+  --split train --sizes 20,40,60 --indices 004,005 \
+  --seeds 1,2 --source-seconds 0.8 --refine-seconds 3 \
+  --output results/tmp/solver-matrix.json
+```
+
+A single comparison budget cannot substitute for [multi-budget performance
+profiles](docs/benchmarking.md). Only methods using the **same** original PSP
+objective and constraints belong on the same ranking. Costs from different
+families or instances must never be compared directly.
 
 ## Quick start (Python 3.12+)
 

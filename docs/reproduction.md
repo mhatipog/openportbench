@@ -33,3 +33,22 @@ multiple seeds before using any comparison in an article or interview.
 functions do not necessarily respect a hard deadline. Any overrun is
 reported in actual elapsed time. The single CP-SAT PSP run gets 10 times
 the per-heuristic allocated budget.
+
+## Reproduce the strict solver tournament
+
+Checkout LACE at the exact SHA above and install `pip install -e '.[dev]'
+plus `mip networkx`. Then run:
+
+```sh
+LACE_ROOT="$PWD/lace_source" python scripts/solver_matrix.py \\
+  --split train --sizes 20,40,60 --indices 004,005 --seeds 1,2 \\
+  --source-seconds 0.8 --refine-seconds 3 \\
+  --output results/tmp/solver-matrix.json
+```
+
+The runner records each method's timeout, feasibility, original-instance
+SHA256 and two-verifier objective agreement. HiGHS is installed via SciPy;
+no commercial solver license is required. See [canonical comparison
+protocol](benchmarking.md). The older portfolio workflow uses a different
+budget allocation convention, so do not combine its scores into one
+incompatible league table.
