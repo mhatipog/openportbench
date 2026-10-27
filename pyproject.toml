@@ -13,8 +13,8 @@ authors = [{name = "OpenPortBench contributors"}]
 dependencies = []
 
 [project.optional-dependencies]
-solver = ["ortools>=9.11,<11"]
-dev = ["pytest>=8", "ortools>=9.11,<11"]
+solver = ["ortools>=9.11,<11", "scipy>=1.14,<2", "numpy>=1.26"]
+dev = ["pytest>=8", "ortools>=9.11,<11", "scipy>=1.14,<2", "numpy>=1.26"]
 
 [project.scripts]
 openportbench = "openportbench.cli:main"
