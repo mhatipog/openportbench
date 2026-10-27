@@ -1,0 +1,261 @@
+{
+  "source_sha": "d772b74690075f641be8077e69748ec482e9febf",
+  "benchmark_sha": "a44b4b2fefb2f1b5d316d99ae48f104a73d42c9f",
+  "status": "diagnostic, previously exposed cases; not a held-out result",
+  "cases": [
+    {
+      "input": "20_2_3_T12_001.txt",
+      "split": "train",
+      "sha256": "2cd9fc87132b535588e22dec70b4595ef1e1163c6f2ae4b7a4b3b6ecfd7298cb",
+      "n": 20,
+      "hard_budget_per_heuristic_s": 0.5,
+      "methods": [
+        {
+          "method": "lace-01",
+          "status": "FEASIBLE",
+          "objective": 13542.1118377,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4261311310000053,
+          "wall_s": 0.46131938900000335
+        },
+        {
+          "method": "lace-02",
+          "status": "FEASIBLE",
+          "objective": 13547.3792627,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4761230120000022,
+          "wall_s": 0.48860371800000024
+        },
+        {
+          "method": "lace-03",
+          "status": "FEASIBLE",
+          "objective": 13709.4856478,
+          "error": null,
+          "solver_reported_elapsed_s": 0.47536708900000235,
+          "wall_s": 0.48783394299999827
+        },
+        {
+          "method": "lace-04",
+          "status": "FEASIBLE",
+          "objective": 13978.041495500001,
+          "error": null,
+          "solver_reported_elapsed_s": 0.46054025500000506,
+          "wall_s": 0.4730967710000016
+        },
+        {
+          "method": "lace-05",
+          "status": "FEASIBLE",
+          "objective": 13542.1118377,
+          "error": null,
+          "solver_reported_elapsed_s": 0.47548517999999973,
+          "wall_s": 0.4879471480000035
+        },
+        {
+          "method": "lace-06",
+          "status": "FEASIBLE",
+          "objective": 14418.2515147,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4605066420000057,
+          "wall_s": 0.4732146370000052
+        },
+        {
+          "method": "lace-07",
+          "status": "FEASIBLE",
+          "objective": 13542.1118377,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4754664049999988,
+          "wall_s": 0.48800763599999897
+        },
+        {
+          "method": "lace-08",
+          "status": "FEASIBLE",
+          "objective": 14383.805429700002,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4758101120000049,
+          "wall_s": 0.48852391699999487
+        },
+        {
+          "method": "lace-09",
+          "status": "FEASIBLE",
+          "objective": 14400.3965897,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4605101090000048,
+          "wall_s": 0.4731148050000016
+        },
+        {
+          "method": "lace-10",
+          "status": "FEASIBLE",
+          "objective": 13542.1118377,
+          "error": null,
+          "solver_reported_elapsed_s": 0.47588572299999754,
+          "wall_s": 0.4884550629999964
+        }
+      ],
+      "best_hard_budget_objective": 13542.1118377
+    },
+    {
+      "input": "80_10_15_T48_001.txt",
+      "split": "test",
+      "sha256": "d996130a50e6d8ad94127ed0c738a71caff5af9c832037adfb4a04e491d38388",
+      "n": 80,
+      "hard_budget_per_heuristic_s": 0.5,
+      "methods": [
+        {
+          "method": "lace-01",
+          "status": "FEASIBLE",
+          "objective": 63736.9027505,
+          "error": null,
+          "solver_reported_elapsed_s": 0.46282929899999914,
+          "wall_s": 0.4751815999999991
+        },
+        {
+          "method": "lace-02",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5024653600000022
+        },
+        {
+          "method": "lace-03",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5018893080000026
+        },
+        {
+          "method": "lace-04",
+          "status": "FEASIBLE",
+          "objective": 61342.713963999995,
+          "error": null,
+          "solver_reported_elapsed_s": 0.49108426099999747,
+          "wall_s": 0.502209508
+        },
+        {
+          "method": "lace-05",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5022572430000025
+        },
+        {
+          "method": "lace-06",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5023676530000003
+        },
+        {
+          "method": "lace-07",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5018177279999989
+        },
+        {
+          "method": "lace-08",
+          "status": "FEASIBLE",
+          "objective": 63650.8558855,
+          "error": null,
+          "solver_reported_elapsed_s": 0.47577514399999643,
+          "wall_s": 0.4870939649999997
+        },
+        {
+          "method": "lace-09",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5017857389999989
+        },
+        {
+          "method": "lace-10",
+          "status": "FEASIBLE",
+          "objective": 61985.33422699999,
+          "error": null,
+          "solver_reported_elapsed_s": 0.4891845590000017,
+          "wall_s": 0.5003352390000018
+        }
+      ],
+      "best_hard_budget_objective": 61342.713963999995
+    },
+    {
+      "input": "500_40_100_T48_001.txt",
+      "split": "test",
+      "sha256": "9da501fa8fff001a2dfd330d8b376cf2c47cbed6c3a1cb028dc80c93d013ddbd",
+      "n": 500,
+      "hard_budget_per_heuristic_s": 0.5,
+      "methods": [
+        {
+          "method": "lace-01",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5018831229999989
+        },
+        {
+          "method": "lace-02",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5026660850000013
+        },
+        {
+          "method": "lace-03",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5026701320000058
+        },
+        {
+          "method": "lace-04",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5025576110000003
+        },
+        {
+          "method": "lace-05",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5025983279999977
+        },
+        {
+          "method": "lace-06",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5029003899999935
+        },
+        {
+          "method": "lace-07",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5023555360000103
+        },
+        {
+          "method": "lace-08",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5024921669999998
+        },
+        {
+          "method": "lace-09",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5018675590000043
+        },
+        {
+          "method": "lace-10",
+          "status": "TIMEOUT",
+          "objective": null,
+          "error": "Hard wall-clock deadline exceeded",
+          "wall_s": 0.5026838139999938
+        }
+      ],
+      "best_hard_budget_objective": null
+    }
+  ]
+}

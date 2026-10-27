@@ -1,0 +1,262 @@
+{
+  "source_sha": "d772b74690075f641be8077e69748ec482e9febf",
+  "benchmark_sha": "fbef05029b3acacf16a584efcc791ae00f22948d",
+  "ortools": "9.15.6755",
+  "python": "3.12.15",
+  "settings": {
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "inputs": [
+      "80_10_15_T48_003.txt",
+      "100_15_30_T48_003.txt"
+    ],
+    "comparison": "equal allocated total time, not exact enforced wall clock",
+    "heuristic": "LACE shipped heuristic_01 only; does not optimize portfolio",
+    "num_search_workers": 1
+  },
+  "rows": [
+    {
+      "instance": "80_10_15_T48_003.txt",
+      "sha256": "a7d3f4382595ed63e8b8388df3bd933fd29275d5478b2b3fe29f2d96872f2851",
+      "split": "test",
+      "seed": 1,
+      "n": 80,
+      "heuristic_01_obj": 56390.04989219999,
+      "heuristic_01_wall_s": 0.33352610200000044,
+      "heuristic_feasible": true,
+      "allocated_total_s_per_method": 5.0,
+      "methods": {
+        "cold": {
+          "status": "FEASIBLE",
+          "objective": 86272.9507984,
+          "best_bound": -938.664654,
+          "wall_total_s": 5.468069415999999,
+          "solver_s": 5.003367621000002,
+          "scale": 5000000,
+          "incumbent_source": "cp-sat",
+          "raw_solver_objective": 86272.9507984,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        },
+        "warm": {
+          "status": "FEASIBLE",
+          "objective": 56387.7678722,
+          "best_bound": -906.219654,
+          "wall_total_s": 5.0856169179999995,
+          "solver_s": 4.668192069999996,
+          "scale": 5000000,
+          "incumbent_source": "cp-sat",
+          "raw_solver_objective": 56387.7678722,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        }
+      },
+      "experiment": "frozen-warm-hint-heldout-first-exposure"
+    },
+    {
+      "instance": "80_10_15_T48_003.txt",
+      "sha256": "a7d3f4382595ed63e8b8388df3bd933fd29275d5478b2b3fe29f2d96872f2851",
+      "split": "test",
+      "seed": 2,
+      "n": 80,
+      "heuristic_01_obj": 59308.006428,
+      "heuristic_01_wall_s": 0.3345852750000091,
+      "heuristic_feasible": true,
+      "allocated_total_s_per_method": 5.0,
+      "methods": {
+        "warm": {
+          "status": "FEASIBLE",
+          "objective": 59308.006428,
+          "best_bound": -938.664654,
+          "wall_total_s": 5.089710524000012,
+          "solver_s": 4.666994625000001,
+          "scale": 5000000,
+          "incumbent_source": "cp-sat",
+          "raw_solver_objective": 59308.006428,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        },
+        "cold": {
+          "status": "FEASIBLE",
+          "objective": 86272.9507984,
+          "best_bound": -938.664654,
+          "wall_total_s": 5.073669069000005,
+          "solver_s": 5.003071461999994,
+          "scale": 5000000,
+          "incumbent_source": "cp-sat",
+          "raw_solver_objective": 86272.9507984,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        }
+      },
+      "experiment": "frozen-warm-hint-heldout-first-exposure"
+    },
+    {
+      "instance": "80_10_15_T48_003.txt",
+      "sha256": "a7d3f4382595ed63e8b8388df3bd933fd29275d5478b2b3fe29f2d96872f2851",
+      "split": "test",
+      "seed": 3,
+      "n": 80,
+      "heuristic_01_obj": 55710.4587644,
+      "heuristic_01_wall_s": 0.3347403129999975,
+      "heuristic_feasible": true,
+      "allocated_total_s_per_method": 5.0,
+      "methods": {
+        "cold": {
+          "status": "FEASIBLE",
+          "objective": 86272.9507984,
+          "best_bound": -938.664654,
+          "wall_total_s": 5.075960961999996,
+          "solver_s": 5.003348269999989,
+          "scale": 5000000,
+          "incumbent_source": "cp-sat",
+          "raw_solver_objective": 86272.9507984,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        },
+        "warm": {
+          "status": "FEASIBLE",
+          "objective": 55710.4587644,
+          "best_bound": -938.664654,
+          "wall_total_s": 5.08836952099999,
+          "solver_s": 4.6668882480000065,
+          "scale": 5000000,
+          "incumbent_source": "cp-sat",
+          "raw_solver_objective": 55710.4587644,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        }
+      },
+      "experiment": "frozen-warm-hint-heldout-first-exposure"
+    },
+    {
+      "instance": "100_15_30_T48_003.txt",
+      "sha256": "0547d4cf29b907f201dd16e66c297103d418b8e3d699c0897408f1f90afac396",
+      "split": "test",
+      "seed": 1,
+      "n": 100,
+      "heuristic_01_obj": 50865.1076782,
+      "heuristic_01_wall_s": 0.33548402600000315,
+      "heuristic_feasible": true,
+      "allocated_total_s_per_method": 5.0,
+      "methods": {
+        "cold": {
+          "status": "UNKNOWN",
+          "objective": null,
+          "best_bound": 0.0,
+          "wall_total_s": 3.2546593160000015,
+          "solver_s": 3.0889457139999905,
+          "scale": 5000000,
+          "incumbent_source": null,
+          "raw_solver_objective": null,
+          "allocated_s": 5.0,
+          "verified_upstream": false,
+          "overran_wall_budget": false
+        },
+        "warm": {
+          "status": "UNKNOWN",
+          "objective": 50865.1076782,
+          "best_bound": 0.0,
+          "wall_total_s": 3.6014308510000035,
+          "solver_s": 3.067846430000003,
+          "scale": 5000000,
+          "incumbent_source": "verified_hint",
+          "raw_solver_objective": null,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        }
+      },
+      "experiment": "frozen-warm-hint-heldout-first-exposure"
+    },
+    {
+      "instance": "100_15_30_T48_003.txt",
+      "sha256": "0547d4cf29b907f201dd16e66c297103d418b8e3d699c0897408f1f90afac396",
+      "split": "test",
+      "seed": 2,
+      "n": 100,
+      "heuristic_01_obj": 51674.05445819999,
+      "heuristic_01_wall_s": 0.3339211750000004,
+      "heuristic_feasible": true,
+      "allocated_total_s_per_method": 5.0,
+      "methods": {
+        "warm": {
+          "status": "UNKNOWN",
+          "objective": 51674.0544582,
+          "best_bound": 0.0,
+          "wall_total_s": 3.569337576999999,
+          "solver_s": 3.036800603000003,
+          "scale": 5000000,
+          "incumbent_source": "verified_hint",
+          "raw_solver_objective": null,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        },
+        "cold": {
+          "status": "UNKNOWN",
+          "objective": null,
+          "best_bound": 0.0,
+          "wall_total_s": 3.1985200959999958,
+          "solver_s": 3.0420640539999937,
+          "scale": 5000000,
+          "incumbent_source": null,
+          "raw_solver_objective": null,
+          "allocated_s": 5.0,
+          "verified_upstream": false,
+          "overran_wall_budget": false
+        }
+      },
+      "experiment": "frozen-warm-hint-heldout-first-exposure"
+    },
+    {
+      "instance": "100_15_30_T48_003.txt",
+      "sha256": "0547d4cf29b907f201dd16e66c297103d418b8e3d699c0897408f1f90afac396",
+      "split": "test",
+      "seed": 3,
+      "n": 100,
+      "heuristic_01_obj": 50783.38797919999,
+      "heuristic_01_wall_s": 0.33452236700000526,
+      "heuristic_feasible": true,
+      "allocated_total_s_per_method": 5.0,
+      "methods": {
+        "cold": {
+          "status": "UNKNOWN",
+          "objective": null,
+          "best_bound": 0.0,
+          "wall_total_s": 3.194251600000001,
+          "solver_s": 3.035863484999993,
+          "scale": 5000000,
+          "incumbent_source": null,
+          "raw_solver_objective": null,
+          "allocated_s": 5.0,
+          "verified_upstream": false,
+          "overran_wall_budget": false
+        },
+        "warm": {
+          "status": "UNKNOWN",
+          "objective": 50783.3879792,
+          "best_bound": 0.0,
+          "wall_total_s": 3.591201975000004,
+          "solver_s": 3.053243293999998,
+          "scale": 5000000,
+          "incumbent_source": "verified_hint",
+          "raw_solver_objective": null,
+          "allocated_s": 5.0,
+          "verified_upstream": true,
+          "overran_wall_budget": false
+        }
+      },
+      "experiment": "frozen-warm-hint-heldout-first-exposure"
+    }
+  ]
+}
