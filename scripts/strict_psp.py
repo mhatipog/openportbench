@@ -28,6 +28,7 @@ def main():
     assert subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"],
                                    text=True).strip() == SHA
     sys.path.insert(0, str(root))
+    import numpy  # preload once before fork, exclude setup import from per-solver budget
     from lace.framework import load_heuristic
     spec = importlib.import_module("problems.port_scheduling_problem.spec").SPEC
     records = []

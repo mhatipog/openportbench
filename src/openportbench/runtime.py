@@ -50,24 +50,35 @@ def run_hard_deadline(spec, instance, solver, seconds, seed=1):
     t0 = time.perf_counter()
     proc.start()
     sender.close()
-    proc.join(timeout=max(0.0, seconds-(time.perf_counter()-t0)))
-    timed_out = proc.is_alive()
-    if timed_out:
+    deadline = t0 + seconds
+    message = None
+    # Drain the pipe while the worker is live. Joining before recv() can
+    # deadlock on sufficiently large solutions (full OS pipe buffer).
+    while time.perf_counter() < deadline:
+        remaining = deadline - time.perf_counter()
+        if receiver.poll(min(0.02, remaining)):
+            try:
+                message = receiver.recv()
+            except EOFError:
+                message = None
+            break
+        if not proc.is_alive():
+            break
+    if proc.is_alive():
         proc.terminate()
         proc.join(timeout=1)
         if proc.is_alive():
             proc.kill()
             proc.join()
-    elapsed = time.perf_counter()-t0
-    if timed_out:
-        receiver.close()
-        return {"status": "TIMEOUT", "objective": None, "solution": None,
-                "error": "Hard wall-clock deadline exceeded", "wall_s": elapsed}
-    if receiver.poll():
-        message = receiver.recv()
-        receiver.close()
+    else:
+        proc.join(timeout=0)
+    elapsed = time.perf_counter() - t0
+    receiver.close()
+    if message is not None:
         message["wall_s"] = elapsed
         return message
-    receiver.close()
+    if elapsed >= seconds:
+        return {"status": "TIMEOUT", "objective": None, "solution": None,
+                "error": "Hard wall-clock deadline exceeded", "wall_s": elapsed}
     return {"status": "ERROR", "objective": None, "solution": None,
             "error": f"Worker exited {proc.exitcode} without returning data", "wall_s": elapsed}
