@@ -39,6 +39,8 @@ def refine(instance: dict, incumbent: dict, method: str, seconds: float, seed: i
 def _worker(conn, instance, incumbent, method, seconds, seed):
     try:
         random.seed(seed)
+        import resource  # Unix-only, as is the existing strict worker protocol
+        usage_start = resource.getrusage(resource.RUSAGE_SELF)
         start = time.perf_counter()
         result = refine(instance, incumbent, method, seconds, seed)
         score = evaluate(instance, result["solution"])
@@ -46,8 +48,13 @@ def _worker(conn, instance, incumbent, method, seconds, seed):
             raise ValueError("Method's objective does not match independent validator")
         data = {key: value for key, value in result.items()
                 if key not in ("solution", "rounds")}
+        usage_end = resource.getrusage(resource.RUSAGE_SELF)
+        cpu_s = ((usage_end.ru_utime+usage_end.ru_stime)
+                 -(usage_start.ru_utime+usage_start.ru_stime))
         data.update({"solution": result["solution"], "objective": score,
-                     "reported_elapsed_s": time.perf_counter()-start})
+                     "reported_elapsed_s": time.perf_counter()-start,
+                     "worker_cpu_s": max(0., cpu_s),
+                     "worker_peak_rss_kb": usage_end.ru_maxrss})
         conn.send({"status": "SUCCESS", "result": data})
     except BaseException as exc:
         conn.send({"status": "ERROR", "error": f"{type(exc).__name__}: {exc}"})
@@ -124,6 +131,8 @@ def strict_refine(instance: dict, incumbent: dict, method: str,
         record["solver_status"] = message["result"].get("status")
         record["source"] = message["result"].get("incumbent_source")
         record["reported_elapsed_s"] = message["result"].get("reported_elapsed_s")
+        record["worker_cpu_s"] = message["result"].get("worker_cpu_s")
+        record["worker_peak_rss_kb"] = message["result"].get("worker_peak_rss_kb")
         record["master_optimal"] = message["result"].get("master_optimal")
         record["full_cp_sat_bound"] = (
             message["result"].get("best_bound") if method == "warm-cp-sat" else None)

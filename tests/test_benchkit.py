@@ -44,3 +44,11 @@ def test_invalid_method_budget():
         strict_refine(case(),empty_solution(case()),"unknown",seconds=1)
     with pytest.raises(ValueError):
         strict_refine(case(),empty_solution(case()),"identity",seconds=0)
+
+def test_completed_worker_records_cpu_and_memory():
+    a=case()
+    result=strict_refine(a,empty_solution(a),"identity",seconds=2.)
+    assert result["status"] == "FEASIBLE"
+    assert result["worker_cpu_s"] >= 0
+    assert result["worker_peak_rss_kb"] > 0
+    assert result["reported_elapsed_s"] <= result["wall_s"]
