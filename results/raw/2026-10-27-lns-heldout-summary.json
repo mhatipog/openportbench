@@ -1,0 +1,114 @@
+{
+  "bootstrap_repeats": 2000,
+  "bootstrap_seed": 2026,
+  "cases": [
+    {
+      "file": "100_15_30_T48_004.txt",
+      "full_10pct_budget_overruns": 0,
+      "lns_10pct_budget_overruns": 0,
+      "mean_full_wall_s": 3.2811526549999996,
+      "mean_gain_pct": 12.13204951750671,
+      "mean_lns_wall_s": 3.861381199500002,
+      "paired_losses": 0,
+      "paired_ties": 0,
+      "paired_wins": 2,
+      "seeds": [
+        1,
+        2
+      ],
+      "size": 100
+    },
+    {
+      "file": "100_15_30_T48_005.txt",
+      "full_10pct_budget_overruns": 0,
+      "lns_10pct_budget_overruns": 0,
+      "mean_full_wall_s": 3.109538804500005,
+      "mean_gain_pct": 8.434642491040425,
+      "mean_lns_wall_s": 4.6507870935,
+      "paired_losses": 0,
+      "paired_ties": 0,
+      "paired_wins": 2,
+      "seeds": [
+        1,
+        2
+      ],
+      "size": 100
+    },
+    {
+      "file": "150_20_40_T48_004.txt",
+      "full_10pct_budget_overruns": 0,
+      "lns_10pct_budget_overruns": 0,
+      "mean_full_wall_s": 5.418720862499995,
+      "mean_gain_pct": 4.648069710175674,
+      "mean_lns_wall_s": 4.944085686999998,
+      "paired_losses": 0,
+      "paired_ties": 0,
+      "paired_wins": 2,
+      "seeds": [
+        1,
+        2
+      ],
+      "size": 150
+    },
+    {
+      "file": "150_20_40_T48_005.txt",
+      "full_10pct_budget_overruns": 0,
+      "lns_10pct_budget_overruns": 0,
+      "mean_full_wall_s": 5.395553109000005,
+      "mean_gain_pct": 4.155046334457362,
+      "mean_lns_wall_s": 4.859843623499998,
+      "paired_losses": 0,
+      "paired_ties": 0,
+      "paired_wins": 2,
+      "seeds": [
+        1,
+        2
+      ],
+      "size": 150
+    },
+    {
+      "file": "80_10_15_T48_004.txt",
+      "full_10pct_budget_overruns": 0,
+      "lns_10pct_budget_overruns": 0,
+      "mean_full_wall_s": 5.269296173000001,
+      "mean_gain_pct": 16.54952236491453,
+      "mean_lns_wall_s": 4.8822172910000035,
+      "paired_losses": 0,
+      "paired_ties": 0,
+      "paired_wins": 2,
+      "seeds": [
+        1,
+        2
+      ],
+      "size": 80
+    },
+    {
+      "file": "80_10_15_T48_005.txt",
+      "full_10pct_budget_overruns": 0,
+      "lns_10pct_budget_overruns": 0,
+      "mean_full_wall_s": 5.092802390999999,
+      "mean_gain_pct": 11.34747919870712,
+      "mean_lns_wall_s": 4.879401373,
+      "paired_losses": 0,
+      "paired_ties": 0,
+      "paired_wins": 2,
+      "seeds": [
+        1,
+        2
+      ],
+      "size": 80
+    }
+  ],
+  "excluded_pairs": [],
+  "experiment": "frozen_lns_v2_first_heldout_blind",
+  "fully_compared_instance_count": 6,
+  "instance_cluster_bootstrap_95pct": [
+    6.149221733882551,
+    12.880523690902464
+  ],
+  "interpretation": "Descriptive paired bootstrap over original instances; not evidence of performance on an operational port",
+  "mean_gain_pct_equal_weight_per_instance": 9.54446826946697,
+  "reported_instance_count": 6,
+  "source_sha256": "27e6d53935ff0a1ab5055ea47bda487323fc89729e8ba2ae56cd07b8edd0a9bc",
+  "verified_pairs": 12
+}
