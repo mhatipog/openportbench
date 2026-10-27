@@ -66,7 +66,14 @@ def greedy(instance: dict, order: str = "fcfs") -> dict:
     return solution
 
 
-def cp_sat(instance: dict, seconds: float = 5.0, seed: int = 1, hint_solution: dict | None = None) -> dict:
+def cp_sat(
+    instance: dict,
+    seconds: float = 5.0,
+    seed: int = 1,
+    hint_solution: dict | None = None,
+    blocked_berths: dict[int, list[tuple[int, int]]] | None = None,
+    blocked_tugs: dict[int, list[tuple[int, int]]] | None = None,
+) -> dict:
     """Full PSP CP-SAT model, no scenario/choice pruning.
 
     Integer time exactly matches LACE's discrete-time contract. Decimal
@@ -155,6 +162,23 @@ def cp_sat(instance: dict, seconds: float = 5.0, seed: int = 1, hint_solution: d
             (s_out - s_in + instance["vessel_outbound_service_times"][i] * active, port),
             (delta, jit),
         ])
+    # Fixed intervals are occupied by vessels outside a restricted-search
+    # neighborhood. They are not model decisions; the problem's variable
+    # vessels retain every original PSP constraint and its exact objective.
+    for kind, restrictions, buckets in (
+        ("berth", blocked_berths or {}, berth_intervals),
+        ("tug", blocked_tugs or {}, tug_intervals),
+    ):
+        for resource_id, windows in restrictions.items():
+            if not 0 <= resource_id < len(buckets):
+                raise ValueError(f"Invalid blocked {kind} ID: {resource_id}")
+            for idx, (start, end) in enumerate(windows):
+                if not (isinstance(start, int) and isinstance(end, int)
+                        and 0 <= start < end):
+                    raise ValueError(f"Invalid blocked {kind} interval: {start, end}")
+                buckets[resource_id].append(model.new_fixed_size_interval_var(
+                    start, end - start, f"fixed_{kind}_{resource_id}_{idx}"
+                ))
     for intervals in berth_intervals + tug_intervals:
         model.add_no_overlap(intervals)
     # Safe incumbent injection: a complete, independently verified PSP
