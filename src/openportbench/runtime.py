@@ -17,12 +17,16 @@ def _execute(conn, spec, instance, solver, seconds, seed):
             np.random.seed(seed)
         except ImportError:
             pass
-        from lace.framework import run_solve
-        result = run_solve(spec, instance, solver, time_limit_s=seconds)
-        conn.send({"status": "FEASIBLE" if result.feasible else "INVALID",
-                   "objective": result.objective if result.feasible else None,
-                   "solution": result.solution if result.feasible else None,
-                   "error": result.error_msg, "solver_reported_elapsed_s": result.elapsed_s})
+        tools = spec.tools(instance)
+        start = time.perf_counter()
+        solution = solver(instance, tools, seconds)
+        if not isinstance(solution, dict):
+            raise TypeError("Solver returned non-dict solution")
+        feasible, error = tools["is_feasible"](solution)
+        score = tools["objective"](solution) if feasible else None
+        conn.send({"status": "FEASIBLE" if feasible else "INVALID",
+                   "objective": score, "solution": solution if feasible else None,
+                   "error": error, "solver_reported_elapsed_s": time.perf_counter()-start})
     except BaseException as exc:
         conn.send({"status": "ERROR", "objective": None,
                    "solution": None, "error": f"{type(exc).__name__}: {exc}"})
