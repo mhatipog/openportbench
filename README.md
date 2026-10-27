@@ -26,11 +26,27 @@ port problems use generated academic test instances. See
 | Full CP-SAT | OR-Tools complete model | A *global* proof only if the solver returns `OPTIMAL` |
 | CP-SAT fix-and-optimize (LNS) | Exact restricted neighborhoods | Valid heuristic incumbents; **no global optimality proof** |
 | Time-indexed pattern MILP | SciPy / open-source HiGHS | Independent solver family; optimal only among explicitly enumerated vessel patterns |
+| ALNS-style adaptive ruin/recreate | Independent Python metaheuristic | Destroy/repair, regret selection and simulated annealing; valid incumbent only, **not** a reproduction of a specific published ALNS |
 | Online k-server and static k-median | Separate synthetic subproblem track | **Not** solutions to complete integrated PSP |
 
 [Benchmark protocol, scoring and how to add an algorithm](docs/benchmarking.md)
 explains what can be compared and exactly how. Source datasets and algorithm
 implementations are pinned; constraints are never silently dropped.
+
+### Verified solver comparison results
+
+* [Three independent algorithm families — original held-out PSP](results/2026-10-27-solver-matrix-heldout.md):
+  full CP-SAT, exact-neighborhood CP-SAT, and restricted-master HiGHS MILP,
+  12 paired runs; **7.31%, 0.68%, 0%** mean reductions respectively, under
+  equal five-second strict refinement deadlines. HiGHS is faster but its
+  limited patterns restrict improvements at larger scale.
+* [Same three algorithms — training PSP](results/2026-10-27-solver-matrix-train-scorecard.md):
+  6.47%, 5.30%, 1.30% mean reductions under three-second strict deadlines.
+* A fourth independent **ALNS-style** adaptive destroy/repair competitor
+  has been added. Its executable benchmarking track is
+  [four-strategy comparison workflow](.github/workflows/solver-matrix-four.yml).
+  It is an original baseline, **not** a faithful implementation of a
+  named published maritime paper.
 
 ### Common-incumbent tournament
 

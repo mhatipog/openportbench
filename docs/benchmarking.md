@@ -30,6 +30,7 @@ Original benchmark LACE: PJ-NTU/LACE at
 | `warm-cp-sat` | constraint programming | complete PSP with optional verified warm start | global `OPTIMAL` only from full model |
 | `fix-optimize-cp-sat` | LNS/matheuristic | small exact subproblems, unchanged resources fixed | conditional neighborhood optimum, never global |
 | `restricted-highs-milp` | time-indexed set-partitioning MILP | limited candidate full-vessel columns, exact conflict model | `MASTER_OPTIMAL` applies to *restricted master only* |
+| `adaptive-ruin-recreate` | adaptive neighborhood metaheuristic | randomized destroy/repair, regret insertion, simulated-annealing acceptance, no MILP/CP-SAT solver | feasible only, not a faithful published maritime ALNS |
 | `identity` | feasibility control | unmodified verified incumbent | feasible only |
 
 The set-partitioning MILP does **not** enumerate the complete PSP
@@ -68,7 +69,10 @@ a differently constrained model is not a comparable benchmark run.
    tiny selection of synthetic examples as exploratory, not SOTA evidence.
 
 Currently `scripts/solver_matrix.py` enforces the strict timing and
-feasibility rules for the three implemented refiner families. The
+feasibility rules for **four** implemented refiners (global CP-SAT,
+CP-SAT fix-and-optimize, HiGHS MILP and a classical ALNS-style heuristic).
+The first archived experiments contain **three** strategies, before the
+ALNS-like comparator was introduced. The
 original ten LACE heuristics have separate strict-wall comparisons under
 `scripts/benchmark_lns_portfolio.py`. The full across-dataset replication,
 hardware/calibration matching and multiple deadline sweeps remain future work.
@@ -81,6 +85,11 @@ hardware/calibration matching and multiple deadline sweeps remain future work.
   This previous protocol allocated wall time equally but did not place the
   *entire* hybrid in a single hard-stop worker. Do **not** blend this claim
   with results from the newer strict common-incumbent protocol.
+* [Three different solver families under exactly enforced wall limits](../results/2026-10-27-solver-matrix-heldout.md):
+  12 paired trials on six original LACE test cases, 80–150 vessels. This
+  stronger protocol shows speed–quality tradeoffs and explicit full CP-SAT
+  timeouts.
+* [Training-only solver comparison](../results/2026-10-27-solver-matrix-train.md)
 * [Other held-out LNS comparison](../results/2026-10-27-lns-heldout.md)
 * [Training parameter choice and negative results](../results/2026-10-27-lns-training.md)
 
