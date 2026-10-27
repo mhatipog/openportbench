@@ -19,8 +19,8 @@ from openportbench.solvers import cp_sat
 
 SOURCE = "d772b74690075f641be8077e69748ec482e9febf"
 FILES = (
-    "80_10_15_T48_002.txt",
-    "100_15_30_T48_002.txt",
+    "80_10_15_T48_003.txt",
+    "100_15_30_T48_003.txt",
 )
 SEEDS = (1, 2, 3)
 TOTAL_S = 5.0
@@ -74,6 +74,7 @@ def main():
                     "best_bound":result["best_bound"],
                     "wall_total_s":elapsed+(hint_wall if label=="warm" else 0.0),
                     "solver_s":result["runtime_s"], "scale":result["scale"],
+                    "incumbent_source": result.get("incumbent_source"), "raw_solver_objective": result.get("solver_objective"),
                     "allocated_s":TOTAL_S, "verified_upstream":sol is not None,
                     "overran_wall_budget":elapsed+(hint_wall if label=="warm" else 0.0)>TOTAL_S*1.1}
             print(filename,seed,record["methods"],flush=True)
@@ -84,7 +85,7 @@ def main():
                         "heuristic":"LACE shipped heuristic_01 only; does not optimize portfolio",
                         "num_search_workers":1},
             "rows":rows}
-    output=Path("results/tmp/psp-warm-hint-heldout.json")
+    output=Path("results/tmp/psp-warm-hint-heldout-003.json")
     output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(report,indent=2,allow_nan=False))
     print("RESULT",output,flush=True)
