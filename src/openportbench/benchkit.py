@@ -12,7 +12,7 @@ import time
 
 from .psp import evaluate
 
-METHODS = ("warm-cp-sat", "fix-optimize-cp-sat", "restricted-highs-milp", "identity")
+METHODS = ("warm-cp-sat", "fix-optimize-cp-sat", "restricted-highs-milp", "adaptive-ruin-recreate", "identity")
 
 
 def refine(instance: dict, incumbent: dict, method: str, seconds: float, seed: int):
@@ -27,6 +27,10 @@ def refine(instance: dict, incumbent: dict, method: str, seconds: float, seed: i
         from .pattern_milp import pattern_milp
         return pattern_milp(instance, incumbent, seconds=seconds,
                             max_columns=24, team_options=2)
+    if method == "adaptive-ruin-recreate":
+        from .alns import alns_psp
+        return alns_psp(instance, incumbent, seconds=seconds, seed=seed,
+                        max_columns=24, max_steps=1200)
     if method == "identity":
         return {"solution": incumbent, "status": "UNCHANGED", "objective": evaluate(instance, incumbent)}
     raise ValueError(f"Unknown solver: {method}")
