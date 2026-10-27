@@ -1,0 +1,75 @@
+name: Archive checksum-verified 3s-vs-10s PSP scaling study
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/archive-budget-sweep.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Fetch exact completed original benchmark archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/scaling/archive results/raw
+          gh run download 40576919339 --repo "$GITHUB_REPOSITORY" -n four-method-frozen-multi-budget-sweep -D /tmp/scaling/archive
+          cp /tmp/scaling/archive/results/tmp/solver-budget-sweep.json results/raw/2026-10-27-budget-sweep.json
+          cp /tmp/scaling/archive/results-dependencies.txt results/raw/2026-10-27-budget-sweep-dependencies.txt
+      - name: Independently verify original JSON checksum, protocol, input cohort and objective integrity
+        run: |
+          set -euo pipefail
+          echo "76e5d3d62c2e9233acf841fad11d74965d60ac726a64263ba961774141bde815  results/raw/2026-10-27-budget-sweep.json" | sha256sum -c -
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from openportbench.matrix_profile import summarize_sweep, render_sweep
+          raw=Path("results/raw/2026-10-27-budget-sweep.json").read_bytes()
+          d=json.loads(raw)
+          assert d['protocol']=='PSP-strict-common-incumbent-sweep-v1'
+          assert d['benchmark_commit']=='e9cb07334951530ca102a8be26aa7abf62ea4b91'
+          assert d['source_sha']=='d772b74690075f641be8077e69748ec482e9febf'
+          assert d['split']=='test'
+          assert d['refinement_hard_budgets_s']==[3.0,10.0]
+          assert d['source_hard_wall_s']==2.0
+          assert len(d['rows'])==12
+          assert {r['n'] for r in d['rows']}=={80,100,150,250,300,500}
+          assert {r['seed'] for r in d['rows']}=={1,2}
+          assert all(r['source_status']=='FEASIBLE' for r in d['rows'])
+          assert all(r['input_sha256'] and r['file'].endswith('_012.txt') for r in d['rows'])
+          assert all(len(r['methods_by_budget'])==2 for r in d['rows'])
+          assert all(len(r['methods_by_budget'][budget])==4 for r in d['rows'] for budget in ('3','10'))
+          assert all(m['valid'] and m['upstream_verified'] for r in d['rows'] for b in r['methods_by_budget'].values() for m in b.values())
+          assert d['summary_by_budget']==summarize_sweep(d)
+          assert all(d['summary_by_budget'][b]['winner_counts_including_ties']=={'fix-optimize-cp-sat':12} for b in ('3','10'))
+          import hashlib
+          content=render_sweep(d,hashlib.sha256(raw).hexdigest())
+          content += "\n## Original benchmark provenance\n\n"
+          content += "- [Successful original Actions run](https://github.com/mhatipog/openportbench/actions/runs/40576919339)\n"
+          content += "- [Immutable raw Actions artifact](https://github.com/mhatipog/openportbench/actions/runs/40576919339/artifacts/12767942280)\n"
+          content += "- Complete raw input hashes and all failed/time-limited solver outcomes: [archived JSON](raw/2026-10-27-budget-sweep.json)\n"
+          content += "- Python dependency snapshot: [archived environment](raw/2026-10-27-budget-sweep-dependencies.txt)\n"
+          Path("results/2026-10-27-budget-sweep.md").write_text(content)
+          print("Verified: 12 matched trials x 2 hard budgets x 4 methods; 6 distinct input files.")
+          PY
+      - name: Commit report and exact original evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/raw/2026-10-27-budget-sweep.json results/raw/2026-10-27-budget-sweep-dependencies.txt results/2026-10-27-budget-sweep.md
+          if git diff --cached --quiet; then
+            echo 'Original archive already present'
+          else
+            git commit -m "Archive verified paired multi-budget 80–500 vessel PSP scaling results"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
