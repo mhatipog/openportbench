@@ -97,3 +97,48 @@ def test_cpsat_matches_bruteforce_single_vessel():
     assert r["status"] == "OPTIMAL"
     assert r["objective"] == pytest.approx(min(exhaustive))
     assert r["best_bound"] == pytest.approx(r["objective"])
+
+
+@pytest.mark.parametrize("prep", [0, 1, 3])
+def test_two_vessel_cp_sat_against_exhaustive_search(prep):
+    """Enumerate every team/time/berth decision, including skipping a vessel.
+
+    Checks the *full* model on adversarial preparation gaps, not merely
+    whether CP-SAT solutions pass the same checker used in production.
+    """
+    pytest.importorskip("ortools")
+    from openportbench.solvers import cp_sat
+    from itertools import product
+    a = case()
+    a["inbound_preparation_time"] = prep
+    a["outbound_preparation_time"] = prep
+
+    def candidates(i):
+        yield None
+        for tin in range(max(0, a["vessel_etas"][i] - a["vessel_early_limits"][i]),
+                         a["vessel_etas"][i] + a["vessel_late_limits"][i] + 1):
+            for berth_time in range(tin + a["vessel_inbound_service_times"][i],
+                                    tin + a["vessel_inbound_service_times"][i] + a["time_constraint_tolerance"] + 1):
+                for out_time in range(berth_time + a["vessel_durations"][i],
+                                      berth_time + a["vessel_durations"][i] + a["time_constraint_tolerance"] + 1):
+                    if out_time + a["vessel_outbound_service_times"][i] > a["time_periods"]:
+                        continue
+                    for in_tug, out_tug in product(range(a["tugboat_num"]), repeat=2):
+                        yield ([0, berth_time], [[in_tug, tin]], [[out_tug, out_time]])
+
+    best = float("inf")
+    for c0, c1 in product(candidates(0), candidates(1)):
+        solution = empty_solution(a)
+        for i, c in enumerate((c0, c1)):
+            if c is not None:
+                (solution["vessel_assignments"][i],
+                 solution["inbound_tugboats"][i],
+                 solution["outbound_tugboats"][i]) = c
+        try:
+            best = min(best, evaluate(a, solution))
+        except ValueError:
+            pass
+    exact = cp_sat(a, seconds=5, seed=3)
+    assert exact["status"] == "OPTIMAL"
+    assert exact["objective"] == pytest.approx(best)
+    assert exact["best_bound"] == pytest.approx(best)

@@ -5,7 +5,7 @@ The first supported exact formulation is LACE's *Port Scheduling Problem* (PSP),
 not a simplified berth-only proxy. The benchmark accepts LACE's unmodified
 instances and scores all methods with an independent feasibility checker.
 
-**Status: research prototype.** This repository does not claim deployment at
+**Status: research prototype.** [First measured, reproducible smoke results](results/2026-10-27-train-smoke.md). This repository does not claim deployment at
 the Port of Antwerp-Bruges or validation on operational traffic. LACE's four
 port problems use generated academic test instances. See
 [methodology](docs/methodology.md) and [reproduction](docs/reproduction.md).
