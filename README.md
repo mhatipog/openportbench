@@ -120,8 +120,7 @@ strict complete-process wall budget:
 
 ```sh
 python -m pip install -e '.[dev]'
-openportbench compare path/to/20_2_3_T12_001.txt \\
-  --seconds 3 --seed 1 --baseline empty --output my-comparison.json
+openportbench compare path/to/20_2_3_T12_001.txt --seconds 3 --seed 1 --baseline empty --output my-comparison.json
 ```
 
 The `empty` baseline means **all vessels unserved**; it is a universal valid
