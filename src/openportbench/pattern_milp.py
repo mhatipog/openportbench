@@ -124,7 +124,7 @@ def columns_for_vessel(a: dict, i: int, incumbent: dict,
                             pat = _pattern(i, berth, t_berth, t_in, t_out,
                                            in_team, out_team, a)
                             candidates[pat[0]] = pat
-    fixed = [incumbent_pattern, none]
+    fixed = ([incumbent_pattern] if incumbent_pattern[0] is None\n             else [incumbent_pattern, none])\n    slots = max_columns - len(fixed)
     # Retain low-cost schedules but promote diversity across starts/berths.
     ranked = sorted((v for key, v in candidates.items()
                      if key not in {None, incumbent_pattern[0]}),
@@ -137,11 +137,11 @@ def columns_for_vessel(a: dict, i: int, incumbent: dict,
         if signature not in used:
             used.add(signature)
             chosen.append(item)
-        if len(chosen) >= max_columns-2:
+        if len(chosen) >= slots:
             break
     chosen_keys = {item[0] for item in chosen}
     for item in ranked:
-        if len(chosen) >= max_columns-2:
+        if len(chosen) >= slots:
             break
         if item[0] not in chosen_keys:
             chosen.append(item)
