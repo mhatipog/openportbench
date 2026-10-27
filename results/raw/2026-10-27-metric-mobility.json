@@ -1,0 +1,358 @@
+{
+  "label": "synthetic mathematical subproblems, NOT real port data",
+  "algorithms": "classical baselines, NOT the OpenAI #110/#125 published algorithms",
+  "source_commit": "72661d9b7bc49ebed378e63d37e12c95d10220e9",
+  "python": "3.12.15",
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "experiment_protocol": "seeds 1..12, no tuning and no held-out LACE data",
+  "rows": [
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 1,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 146,
+      "greedy": 151,
+      "one_swap": 151,
+      "exact_runtime_s": 0.019849079000000103,
+      "exact_centers": [
+        3,
+        11,
+        24
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 1,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 28,
+      "nearest": 28,
+      "random_two": 52,
+      "preview2": 28,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 2,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 135,
+      "greedy": 150,
+      "one_swap": 135,
+      "exact_runtime_s": 0.0200036180000005,
+      "exact_centers": [
+        6,
+        9,
+        23
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 2,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 25,
+      "nearest": 25,
+      "random_two": 43,
+      "preview2": 25,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 3,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 128,
+      "greedy": 142,
+      "one_swap": 131,
+      "exact_runtime_s": 0.019746025999999972,
+      "exact_centers": [
+        7,
+        15,
+        18
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 3,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 29,
+      "nearest": 32,
+      "random_two": 52,
+      "preview2": 31,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 4,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 108,
+      "greedy": 120,
+      "one_swap": 120,
+      "exact_runtime_s": 0.02009668699999878,
+      "exact_centers": [
+        3,
+        11,
+        18
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 4,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 25,
+      "nearest": 25,
+      "random_two": 41,
+      "preview2": 25,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 5,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 144,
+      "greedy": 163,
+      "one_swap": 144,
+      "exact_runtime_s": 0.020326188000002077,
+      "exact_centers": [
+        6,
+        8,
+        21
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 5,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 25,
+      "nearest": 27,
+      "random_two": 43,
+      "preview2": 27,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 6,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 145,
+      "greedy": 153,
+      "one_swap": 153,
+      "exact_runtime_s": 0.02069946300000325,
+      "exact_centers": [
+        1,
+        14,
+        16
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 6,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 38,
+      "nearest": 40,
+      "random_two": 62,
+      "preview2": 40,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 7,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 95,
+      "greedy": 106,
+      "one_swap": 106,
+      "exact_runtime_s": 0.02032541600000215,
+      "exact_centers": [
+        7,
+        16,
+        24
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 7,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 31,
+      "nearest": 35,
+      "random_two": 41,
+      "preview2": 37,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 8,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 116,
+      "greedy": 124,
+      "one_swap": 118,
+      "exact_runtime_s": 0.019827026000001524,
+      "exact_centers": [
+        2,
+        10,
+        18
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 8,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 31,
+      "nearest": 31,
+      "random_two": 43,
+      "preview2": 31,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 9,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 126,
+      "greedy": 139,
+      "one_swap": 126,
+      "exact_runtime_s": 0.019847054999999614,
+      "exact_centers": [
+        6,
+        17,
+        19
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 9,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 35,
+      "nearest": 43,
+      "random_two": 49,
+      "preview2": 39,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 10,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 112,
+      "greedy": 119,
+      "one_swap": 119,
+      "exact_runtime_s": 0.019874235999999712,
+      "exact_centers": [
+        8,
+        10,
+        17
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 10,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 31,
+      "nearest": 33,
+      "random_two": 53,
+      "preview2": 33,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 11,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 140,
+      "greedy": 149,
+      "one_swap": 149,
+      "exact_runtime_s": 0.0198101709999996,
+      "exact_centers": [
+        1,
+        8,
+        17
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 11,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 29,
+      "nearest": 31,
+      "random_two": 53,
+      "preview2": 31,
+      "preview2_uses_future_requests": true
+    },
+    {
+      "track": "synthetic_kmedian_grid",
+      "seed": 12,
+      "metric": "5x5 unit Manhattan grid",
+      "k": 3,
+      "objective_unit": "weighted grid steps",
+      "exact": 130,
+      "greedy": 145,
+      "one_swap": 145,
+      "exact_runtime_s": 0.019947295000001475,
+      "exact_centers": [
+        2,
+        13,
+        16
+      ]
+    },
+    {
+      "track": "synthetic_kserver_ring",
+      "seed": 12,
+      "metric": "8-node undirected cycle shortest-path metric",
+      "k": 2,
+      "n_requests": 30,
+      "objective_unit": "movement edges",
+      "offline_exact": 30,
+      "nearest": 32,
+      "random_two": 54,
+      "preview2": 32,
+      "preview2_uses_future_requests": true
+    }
+  ]
+}
