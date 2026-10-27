@@ -44,13 +44,30 @@ at the public repository; we have not independently verified their proofs.
 | [#120 near-linear matching](https://github.com/openai/math/blob/main/overview.tex) | Randomized exact maximum-cardinality general-graph matching in (n+m)^(1+o(1)), success ≥2/3 | One-to-one compatible task-resource pairings only, not team tug assignment or dynamic routing | Prefer existing optimized conventional matching first; no convincing direct algorithm transplant yet |
 | [#118 bin packing gap](https://github.com/openai/math/blob/main/lean/docs/118.md) | Unbounded **additive** configuration-LP gap, unrelated to CP-SAT lower bounds by itself | Capacity-packing abstractions only | Do not generalize gap to PSP; validate every reported best bound against integer objectives |
 
-## Execution status
+## Execution status — final handoff (27 October 2026)
 
-* PSP training smoke at commit 24637ff passed; one 20-vessel example CP-SAT
-  objective 12736.2769343 and equal bound, independently rechecked vs original.
-* Larger held-out benchmark must be kept disjoint from heuristic tuning.
-* Online-dispatch and k-median prototypes use reproducible **synthetic**
-  metrics, explicit exact small-instance oracles and no operational claims.
-* Full no-fee reproducibility requires recorded seeds, source commits, input
-  SHA256, package versions, wall/CPU time, and memory limits. In-progress
-  experiments may fail; failures are part of the scientific record.
+The initial literature survey preceded the implementation of a **four-method
+PSP tournament**. For its authoritative current state, see
+[the benchmark-first README](../README.md),
+[the canonical strict comparison](../results/2026-10-27-budget-sweep.md),
+[the archived raw JSON](../results/raw/2026-10-27-budget-sweep.json),
+and the [fixed methodology](methodology.md).
+
+* The strict study now covers 80–500 vessels, six distinct synthetic original
+  LACE test cases and two seeds per case, at 3 s and 10 s deadlines.
+* The compared methods are complete CP-SAT, LNS backed by restricted
+  CP-SAT, time-indexed restricted HiGHS MILP, and an original adaptive
+  ruin/recreate implementation. That last implementation is **not** a faithful
+  copy of a named paper's ALNS algorithm.
+* Original LACE's ten published heuristics were also executed in **separate**
+  portfolio experiments with different runtime accounting.
+* The online-dispatch and k-median studies remain distinct synthetic
+  subproblems. The new theoretical algorithms in OpenAI/math have **not** been
+  implemented in this repository.
+* No real port data, operational deployment or commercial package has been
+  benchmarked. Stronger evidence would require faithful external method
+  replication on the same PSP objective and a broader untouched dataset.
+
+The preceding literature matrix is a source/applicability catalogue, not a
+ranking of directly interchangeable optimizers. Source links and mathematical
+claims should be rechecked against the relevant publication before reuse.

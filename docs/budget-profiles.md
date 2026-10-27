@@ -35,3 +35,19 @@ descriptive and likely wide; they are **not** publication-grade guarantees.
 
 The experiment does not reproduce an external academic ALNS paper or
 OpenAI theorem. Those remain separate planned comparator tracks.
+
+## Completed results
+
+The registered experiment **succeeded** in [GitHub Actions run
+40576919339](https://github.com/mhatipog/openportbench/actions/runs/40576919339).
+The [final scorecard](../results/2026-10-27-budget-sweep.md),
+[raw data](../results/raw/2026-10-27-budget-sweep.json), and
+[dependency snapshot](../results/raw/2026-10-27-budget-sweep-dependencies.txt)
+are preserved. The original data digest is
+`76e5d3d62c2e9233acf841fad11d74965d60ac726a64263ba961774141bde815`.
+
+LNS won on this cohort, with 5.35% / 9.02% average objective reductions at
+3 s / 10 s. These outcomes are descriptive for the six synthetic test
+instances; they do not establish superiority to published methods or real
+port operations. The `_012` test cases are now exposed to maintainers and
+must not be treated as unseen when tuning future methods.

@@ -86,3 +86,13 @@ Never publish private vessel schedules or sensitive operational logs.
 Before redistributing datasets or third-party implementations, check
 their licenses and provenance. Do not include secrets, API tokens,
 customer data, or proprietary benchmark code in issues or submissions.
+
+## Final study protection
+
+Treat [the 27 October 2026 3 s / 10 s benchmark](results/2026-10-27-budget-sweep.md)
+as a frozen historical study. Its raw JSON, checksum and original-source
+commit are provenance records, not an editable current leaderboard. New
+papers, algorithms or parameter settings should get a **new separately named
+study** and a fresh pre-registered holdout manifest. Run the standard test
+suite, preserve failures, and never convert a restricted MILP certificate into
+a full PSP optimality claim.

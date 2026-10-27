@@ -68,17 +68,21 @@ a differently constrained model is not a comparable benchmark run.
 8. Archive *all* outcomes in JSON with reproducible source hash. Treat a
    tiny selection of synthetic examples as exploratory, not SOTA evidence.
 
-Currently `scripts/solver_matrix.py` enforces the strict timing and
-feasibility rules for **four** implemented refiners (global CP-SAT,
-CP-SAT fix-and-optimize, HiGHS MILP and a classical ALNS-style heuristic).
-The first archived experiments contain **three** strategies, before the
-ALNS-like comparator was introduced. The
-original ten LACE heuristics have separate strict-wall comparisons under
-`scripts/benchmark_lns_portfolio.py`. The full across-dataset replication,
-hardware/calibration matching and multiple deadline sweeps remain future work.
+The current `scripts/solver_matrix.py` supports four PSP refinement
+strategies, plus **strict multi-budget sweeps** with the same original
+verified starting schedule at each deadline. The
+[completed 3 s vs 10 s study](../results/2026-10-27-budget-sweep.md)
+compares them across 80–500 vessels. The first three-strategy experiments
+are historical and remain separate. The ten original LACE heuristics
+have their own portfolio comparison in
+`scripts/benchmark_lns_portfolio.py`, with a different budget protocol.
+Broader independent datasets, real-port disturbance studies and faithful
+reproduction of named maritime ALNS/decomposition papers remain future work.
 
 ## Current research evidence
 
+* [**Canonical completed four-method, 3 s / 10 s budget sweep**](../results/2026-10-27-budget-sweep.md): six original test files, two seeds each, 80–500 vessels; exact archived data, input checksums, descriptive instance-level bootstrap intervals and strict external deadlines. LNS improved 5.35% / 9.02% versus the common starting schedule. This is **synthetic research evidence, not academic SOTA**.
+* [Four-method 5 s held-out comparison](../results/2026-10-27-four-method-heldout.md): an earlier frozen, different-input trial, retained for provenance.
 * [Strict ten-method LACE baseline](../results/2026-10-27-lns-portfolio.md):
   12/12 paired wins by CP-SAT neighborhood hybrid in six held-out test
   inputs, short seven-second *allocated* budget, mean 6.33% reduced objective.
@@ -127,7 +131,7 @@ per-instance bootstrap uncertainty assessment.
 
 ## Extensibility roadmap
 
-Prioritize: (1) complete untouched test-set sweeps at several budgets,
+Prioritize: (1) **larger** pre-registered untouched test-set sweeps with broader hardware and budgets,
 (2) a genuinely independent published ALNS and full MILP/decomposition model
 under the **same** PSP objective, (3) robust arrival-delay and tug-outage
 replanning benchmark with feasibility and stability metrics, (4) separate
@@ -140,3 +144,13 @@ Academic motivation (not direct score comparators):
 * [LACE, Nature Machine Intelligence 2026](https://www.nature.com/articles/s42256-026-01307-8)
 * [MILP-ALNS berth and crane planning, Guissou et al., 2026](https://biblio.ugent.be/publication/01K5RKF5N72FMHYKPTZYCEGH43)
 * [ADP-MLNS joint vessel and tug scheduling, 2026](https://www.sciencedirect.com/science/article/pii/S0029801826032671)
+
+## Final handoff checkpoint
+
+The canonical results were archived before documentation cleanup; their
+original runner SHA and raw JSON SHA256 stay unchanged. Documentation-only
+changes do not constitute a new benchmark run. The project can be used now
+for PSP benchmark comparisons; further experiments are optional and should
+be added as new immutable result sets with separate training/test controls.
+
+See [project status and remaining limitations](STATUS.md).
