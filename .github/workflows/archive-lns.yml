@@ -1,0 +1,66 @@
+name: Archive checksum-verified LNS experiments
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/archive-lns.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download exact three previously successful experiment artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p results/raw /tmp/lns-v1 /tmp/lns-v2 /tmp/lns-heldout
+          gh run download 40557587715 --repo "$GITHUB_REPOSITORY" -n lns-train-v1-json -D /tmp/lns-v1
+          gh run download 40558019714 --repo "$GITHUB_REPOSITORY" -n lns-train-v2-json -D /tmp/lns-v2
+          gh run download 40558571853 --repo "$GITHUB_REPOSITORY" -n lns-heldout-v2-json -D /tmp/lns-heldout
+          cp /tmp/lns-v1/lns-train-v1.json results/raw/2026-10-27-lns-train-v1.json
+          cp /tmp/lns-v2/lns-train-v2.json results/raw/2026-10-27-lns-train-v2.json
+          cp /tmp/lns-heldout/lns-heldout-v2.json results/raw/2026-10-27-lns-heldout-v2.json
+      - name: Verify checksums, split isolation and original commit IDs
+        run: |
+          echo "4f111bb9b8027f0b29e88ade2961d87226351d9c86304474eff10010091e00fd  results/raw/2026-10-27-lns-train-v1.json" | sha256sum -c -
+          echo "ed89a05574b7f37a022349da40e29f12d2e9cac3a00027f8414ed2d1436a9b1e  results/raw/2026-10-27-lns-train-v2.json" | sha256sum -c -
+          echo "27e6d53935ff0a1ab5055ea47bda487323fc89729e8ba2ae56cd07b8edd0a9bc  results/raw/2026-10-27-lns-heldout-v2.json" | sha256sum -c -
+          python - <<'PY'
+          import pathlib, json
+          p=pathlib.Path('results/raw')
+          for name,sha,split,num in [
+              ('2026-10-27-lns-train-v1.json','4aaca17b7ba0fe46e70f59e031a3b6779fab508f','train',9),
+              ('2026-10-27-lns-train-v2.json','830d8ec4dab5aba6b23bba9d3ea532fb8ab29f08','train',9),
+              ('2026-10-27-lns-heldout-v2.json','75180009b77af8f3e1a82b0e6311638e71dba146','test',12)]:
+              doc=json.loads((p/name).read_text())
+              assert doc['openportbench_sha']==sha and len(doc['rows'])==num
+              assert all(x['split']==split for x in doc['rows'])
+              assert all(x['methods']['restricted_lns']['upstream_verified'] and
+                         x['methods']['warm_full_cp_sat']['upstream_verified']
+                         for x in doc['rows'])
+          print('VERIFIED 30 paired training/test records with independent scoring')
+          PY
+      - name: Generate instance-clustered statistical summary
+        run: |
+          python -m pip install -e .
+          python scripts/summarize_lns.py results/raw/2026-10-27-lns-heldout-v2.json --output results/raw/2026-10-27-lns-heldout-summary.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('results/raw/2026-10-27-lns-heldout-summary.json'))
+          assert x['verified_pairs']==12
+          assert x['fully_compared_instance_count']==6
+          assert 9.50 < x['mean_gain_pct_equal_weight_per_instance'] < 9.60
+          print('VERIFIED summary pairs, case weighting and mean')
+          PY
+      - name: Commit original immutable experiment records and derived summary
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/raw
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive original LNS training and held-out records with checksums"
+            git push origin HEAD:main
+          fi
