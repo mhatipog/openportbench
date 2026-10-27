@@ -8,6 +8,9 @@ from .solvers import greedy, cp_sat
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] in ("compare", "benchmark"):
+        from .comparison_cli import main as compare_main
+        return compare_main(sys.argv[2:])
     p = argparse.ArgumentParser()
     p.add_argument("instance", help="LACE PSP text file")
     p.add_argument("--method", choices=["fcfs", "priority", "cp-sat"], default="cp-sat")
