@@ -1,4 +1,4 @@
-from scripts.solver_matrix import summary
+from openportbench.matrix_summary import summary
 
 
 def test_summary_instances_not_seeds():
