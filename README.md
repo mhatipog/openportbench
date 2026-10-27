@@ -35,6 +35,20 @@ implementations are pinned; constraints are never silently dropped.
 
 ### Verified solver comparison results
 
+### Latest verified evidence: runtime/scale trade-offs
+
+**[Strict 3-second vs 10-second scaling benchmark (80–500 vessels)](results/2026-10-27-budget-sweep.md)** —
+four search strategies, 6 original LACE *test* inputs, 2 seeds each,
+same verified initial schedule across both deadline choices and
+externally enforced hard deadlines. LNS improved objective by
+**5.35% at 3 s and 9.02% at 10 s**, best in 12/12 paired runs
+at each deadline. Full warm CP-SAT timed out in 10/12 trials;
+restricted-master MILP and adaptive ruin/recreate each timed out in
+4/12. On the 500-vessel case LNS improved **1.61% / 2.37%** respectively.
+These are synthetic samples, **not** proof of general SOTA.
+[Original experiment log](https://github.com/mhatipog/openportbench/actions/runs/40576919339)
+and [complete checksum-verified raw JSON](results/raw/2026-10-27-budget-sweep.json).
+
 * [Four independent strategies, untouched 80–150-vessel tests](results/2026-10-27-four-method-heldout.md):
   shared valid baseline and strict five-second refinement deadlines.
   Mean objective reductions vs baseline: **8.65%** for CP-SAT LNS,
@@ -96,6 +110,31 @@ openportbench path/to/20_2_3_T12_001.txt --method cp-sat --seconds 5 --seed 1
 Methods report their actual elapsed times, feasibility-certified objectives
 and, for CP-SAT, a valid solver best bound where available. No seed or
 runtime extrapolation is considered evidence of a speedup.
+
+## Try comparing solvers on your own PSP instance
+
+Without the upstream LACE checkout, you can run the same registered method
+families on any original-format PSP file. All outcomes are checked by
+OpenPortBench's independent PSP validator, and each method receives a
+strict complete-process wall budget:
+
+```sh
+python -m pip install -e '.[dev]'
+openportbench compare path/to/20_2_3_T12_001.txt \\
+  --seconds 3 --seed 1 --baseline empty --output my-comparison.json
+```
+
+The `empty` baseline means **all vessels unserved**; it is a universal valid
+starting schedule but not a strong practical heuristic. For a stronger
+comparison use `--baseline priority`, `--baseline fcfs`, or supply a
+previously validated full schedule using `--initial-json schedule.json`.
+Baseline construction is timed **separately**. Use `--include-solutions`
+if you need complete optimized berth/tug assignments.
+
+This CLI is an exploratory convenience, not the paper-quality original LACE
+comparison: only the pinned
+[`scripts/solver_matrix.py`](scripts/solver_matrix.py) also cross-validates
+with LACE's own evaluator and records the full benchmark cohort and source.
 
 ## Measured optimization results (research instances)
 

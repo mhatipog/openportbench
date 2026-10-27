@@ -109,6 +109,22 @@ comparisons with commercial terminal systems or real port operational logs.
 * No "beats commercial product" claim without running equivalent licensed
   product code against identical objective and constraints.
 
+## Portable benchmark runner
+
+`openportbench compare instance.txt --seconds 3 --seed 1`
+compares all currently registered refiner families under identical
+OS-enforced deadlines, with an independently verified (all-unserved by
+default) initial schedule. Optional `--initial-json` accepts a full
+validated PSP schedule with integer vessel IDs serialized as JSON keys.
+
+The standalone runner uses this project's validator; for publishable
+reproduction prefer the pinned original LACE tournament workflow so that
+original LACE scoring is independently cross-checked. The
+[archived 3s/10s scaling results](../results/2026-10-27-budget-sweep.md)
+and [raw JSON](../results/raw/2026-10-27-budget-sweep.json) include
+instance SHA256 hashes, strict deadlines, solver failures, and a
+per-instance bootstrap uncertainty assessment.
+
 ## Extensibility roadmap
 
 Prioritize: (1) complete untouched test-set sweeps at several budgets,
