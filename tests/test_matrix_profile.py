@@ -58,3 +58,14 @@ def test_bad_protocol_and_zero_reference_rejected():
     doc["rows"][0]["source_objective"]=0
     with pytest.raises(ValueError):
         _clustered_values(doc,3.,"a")
+
+def test_missing_initial_feasible_excludes_false_wins():
+    doc=sample()
+    doc["rows"][0]["source_status"]="TIMEOUT"
+    doc["rows"][0]["source_objective"]=None
+    result=summarize_sweep(doc)
+    assert result["3"]["source_failed"]==1
+    assert result["3"]["metrics"]["a"]["observations"]==3
+    assert result["3"]["winner_counts_including_ties"]=={"a":3}
+    text=render_sweep(doc,"digest")
+    assert "Failed source construction: **1** of 4" in text

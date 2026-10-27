@@ -33,6 +33,8 @@ def summary(doc):
             table[method]["mean_final_objective_by_size"][str(size)]=statistics.mean(matching)
     wins={}
     for row in doc["rows"]:
+        if row["source_status"] != "FEASIBLE":
+            continue  # A failed common incumbent makes all matched ranks invalid.
         eligible={k:v["objective"] for k,v in row["methods"].items() if v["valid"]
                   and v["status"]=="FEASIBLE"}
         if not eligible:

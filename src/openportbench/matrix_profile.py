@@ -79,15 +79,16 @@ def render_sweep(doc: dict, source_hash: str) -> str:
         "> Exploratory synthetic benchmark. There is no commercial or published "
         "SOTA equivalence implied by these rankings.",
         "",
-        f"- Source: **LACE** commit \`{doc['source_sha']}\`, **{doc['split']}** split",
-        f"- Runner: \`{doc['benchmark_commit']}\`",
+        f"- Source: **LACE** commit `{doc['source_sha']}`, **{doc['split']}** split",
+        f"- Runner: `{doc['benchmark_commit']}`",
         f"- Unmodified input instances: **{len({r['input_sha256'] for r in rows})}**; "
         f"observations with different random seeds: **{len(rows)}**",
         f"- Source heuristic strict construction budget: **{doc['source_hard_wall_s']} s** "
         "(common to every method AND all refinement budgets within a trial)",
         f"- Method refinement deadlines (strict worker-launch-to-response): "
         + ", ".join(f"**{b:g} s**" for b in budgets),
-        f"- Raw primary JSON SHA256: \`{source_hash}\`",
+        f"- Raw primary JSON SHA256: `{source_hash}`",
+        f"- Failed source construction: **{sum(r['source_status'] != 'FEASIBLE' for r in rows)}** of {len(rows)}; those trials are excluded from paired rankings",
         "",
         "## Equal-budget comparisons",
         "",
@@ -101,7 +102,7 @@ def render_sweep(doc: dict, source_hash: str) -> str:
         for method in methods:
             record=summaries.get(method)
             if record is None:
-                out.append(f"| {key} s | \`{method}\` | — | — | — | — | — |")
+                out.append(f"| {key} s | `{method}` | — | — | — | — | — |")
                 continue
             ci=confidence_interval(_clustered_values(doc,budget,method))
             bounds=(f"[{ci['lower']:.2f}%, {ci['upper']:.2f}%]"
@@ -111,7 +112,7 @@ def render_sweep(doc: dict, source_hash: str) -> str:
                       if row["source_status"]=="FEASIBLE" and
                       row["methods_by_budget"][key][method]["status"]=="FEASIBLE")
             out.append(
-                f"| {key} s | \`{method}\` | "
+                f"| {key} s | `{method}` | "
                 f"{record['mean_improvement_pct_instance_weighted']:.2f}% | "
                 f"{bounds} | {record['mean_observed_wall_s']:.2f} s | "
                 f"{record['hard_timeout_count']}/{total} | {valid}/{total} |")
@@ -125,7 +126,7 @@ def render_sweep(doc: dict, source_hash: str) -> str:
         "",
         "## Per-instance improvement curves",
         "",
-        "| Input | Seeds | Budget | "+ " | ".join(f"\`{m}\`" for m in methods)+" |",
+        "| Input | Seeds | Budget | "+ " | ".join(f"`{m}`" for m in methods)+" |",
         "| --- | ---: | ---: | "+" | ".join("---:" for _ in methods)+" |",
     ])
     grouped=defaultdict(list)
@@ -143,7 +144,7 @@ def render_sweep(doc: dict, source_hash: str) -> str:
                     for row in items if row["source_status"]=="FEASIBLE"
                 ]
                 measures.append(f"{statistics.mean(values):.2f}%" if values else "—")
-            out.append(f"| \`{name}\` | {len(items)} | {key} s | "
+            out.append(f"| `{name}` | {len(items)} | {key} s | "
                        + " | ".join(measures)+" |")
     out.extend([
         "",
